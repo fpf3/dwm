@@ -189,6 +189,7 @@ static void pop(Client *);
 static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
+static void reload(const Arg *arg);
 static void resize(Client *c, int x, int y, int w, int h, int interact);
 static void resizeclient(Client *c, int x, int y, int w, int h);
 static void resizemouse(const Arg *arg);
@@ -268,6 +269,8 @@ static Display *dpy;
 static Drw *drw;
 static Monitor *mons, *selmon;
 static Window root, wmcheckwin;
+static char** gb_argv;
+static char** gb_envp;
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
@@ -1267,6 +1270,12 @@ recttomon(int x, int y, int w, int h)
 }
 
 void
+reload(const Arg *arg)
+{
+    execve(gb_argv[0], gb_argv, gb_envp);
+}
+
+void
 resize(Client *c, int x, int y, int w, int h, int interact)
 {
 	if (applysizehints(c, &x, &y, &w, &h, interact))
@@ -2128,8 +2137,11 @@ zoom(const Arg *arg)
 }
 
 int
-main(int argc, char *argv[])
+main(int argc, char *argv[], char* envp[])
 {
+    gb_argv = argv;
+    gb_envp = envp;
+
 	if (argc == 2 && !strcmp("-v", argv[1]))
 		die("dwm-"VERSION);
 	else if (argc != 1)
