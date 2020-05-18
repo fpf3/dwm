@@ -2560,11 +2560,27 @@ updatewmhints(Client *c)
 void
 view(const Arg *arg)
 {
-	if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags])
-		return;
+    static unsigned int oldtag = 255;
+    static int toggleflag = 0;
+
+    unsigned int curtag = selmon->tagset[selmon->seltags];
+
+	if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags]){
+        if (oldtag == 255)
+            return;
+        
+        toggleflag = 1;
+    }
 	selmon->seltags ^= 1; /* toggle sel tagset */
-	if (arg->ui & TAGMASK)
+	if (arg->ui & TAGMASK){
+        if (toggleflag){
+            selmon->tagset[selmon->seltags] = oldtag & TAGMASK;
+            toggleflag = 0;
+        } else {
 		selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
+        }
+    }
+    oldtag = curtag;
 	focus(NULL);
 	arrange(selmon);
 }
