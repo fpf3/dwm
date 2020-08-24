@@ -258,6 +258,7 @@ static void spawn(const Arg *arg);
 static Monitor *systraytomon(Monitor *m);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
+static void tagrename();
 static void tile(Monitor *);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
@@ -846,13 +847,15 @@ drawbar(Monitor *m)
 	}
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
+        if (!(occ & 1 << i) && !(m->tagset[m->seltags] & 1 << i)) continue;
 		w = TEXTW(tags[i]);
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-		if (occ & 1 << i)
-			drw_rect(drw, x + boxs, boxs, boxw, boxw,
-				m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
-				urg & 1 << i);
+        // FPF3 : old code to draw non-empty tag indicator
+		//if (occ & 1 << i)
+		//	drw_rect(drw, x + boxs, boxs, boxw, boxw,
+		//		m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
+		//		urg & 1 << i);
 		x += w;
 	}
 	w = blw = TEXTW(m->ltsymbol);
@@ -2023,6 +2026,17 @@ tagmon(const Arg *arg)
 	if (!selmon->sel || !mons->next)
 		return;
 	sendmon(selmon->sel, dirtomon(arg->i));
+}
+
+void
+tagrename(Monitor *m)
+{
+    FILE* fp = popen("echo -e \"\\n\" | dmenu", "r");
+    char* ret = malloc(64 * sizeof(char));
+    int lne = fgets(ret, sizeof(ret)-1, fp);
+    printf(ret);
+    tags[selmon->tagset[selmon->seltags]-1] = ret;
+    pclose(fp);
 }
 
 void

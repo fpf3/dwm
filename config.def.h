@@ -35,7 +35,8 @@ static Sp scratchpads[] = {
 };
 
 /* tagging */
-static const char *tags[] = { "main", "dev", "media", "steam", "disc", "disp", "doc", "aux", "term" };
+#define MAXTAGSLEN 32
+static char *tags[] = { "main", "dev", "media", "steam", "disc", "disp", "doc", "aux", "term" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -134,6 +135,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+    { MODKEY|ShiftMask,             XK_t,      tagrename,      {0} },
     { MODKEY|ShiftMask,             XK_r,      reload,         {0} },
 	{ MODKEY,            			XK_u,  	   togglescratch,  {.ui = 0 } },
 	{ MODKEY|ShiftMask,            	XK_c,	   togglescratch,  {.ui = 1 } },
