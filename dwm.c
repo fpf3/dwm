@@ -232,6 +232,7 @@ static void restack(Monitor *m);
 static void run(void);
 static void runAutoStart(void);
 static void scan(void);
+static void scrolltag(const Arg* arg);
 static int sendevent(Window w, Atom proto, int m, long d0, long d1, long d2, long d3, long d4);
 static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
@@ -521,8 +522,13 @@ buttonpress(XEvent *e)
 	}
 	for (i = 0; i < LENGTH(buttons); i++)
 		if (click == buttons[i].click && buttons[i].func && buttons[i].button == ev->button
-		&& CLEANMASK(buttons[i].mask) == CLEANMASK(ev->state))
+		&& CLEANMASK(buttons[i].mask) == CLEANMASK(ev->state)){
+            
+            if (click == ClkTagBar && (ev->button == Button4 || ev->button == Button5))
+                    arg.v = (void*) ev;
+
 			buttons[i].func(click == ClkTagBar && buttons[i].arg.i == 0 ? &arg : &buttons[i].arg);
+        }
 }
 
 void
@@ -1656,6 +1662,38 @@ setclientstate(Client *c, long state)
 
 	XChangeProperty(dpy, c->win, wmatom[WMState], wmatom[WMState], 32,
 		PropModeReplace, (unsigned char *)data, 2);
+}
+
+void
+scrolltag(const Arg* arg)
+{
+    XButtonPressedEvent* ev = (XButtonPressedEvent*) arg->v;
+    
+    int dir;
+    if (ev->button == Button4)
+        dir = -1;
+    else if (ev->button == Button5)
+        dir = 1;
+    else
+        return;
+
+    Monitor* m = wintomon(ev->window);
+  
+    int i;
+    for (i = 0; i < LENGTH(tags); i++){
+        if (m->tagset[m->seltags] & 1 << i)
+            break;
+    }
+
+    do {
+        i += dir;
+    } while (i < LENGTH(tags) && i >= 0 && !(open_tags & (1 << i)));
+
+    if (i < LENGTH(tags) && i >= 0){
+        Arg temparg;
+        temparg.ui = (1 << i);
+        view(&temparg);
+    }
 }
 
 int
