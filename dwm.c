@@ -147,6 +147,7 @@ struct Monitor {
 	unsigned int seltags;
 	unsigned int sellt;
 	unsigned int tagset[2];
+    unsigned int open_tags;
 	int showbar;
 	int topbar;
 	Client *clients;
@@ -300,7 +301,6 @@ static int sw, sh;           /* X display screen geometry width, height */
 static int bh, blw = 0;      /* bar geometry */
 static int enablegaps = 1;   /* enables gaps, used by togglegaps */
 static int lrpad;            /* sum of left and right padding for text */
-static unsigned long open_tags = 0; /* bitmask of tags that are currently in use */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
 static void (*handler[LASTEvent]) (XEvent *) = {
@@ -501,7 +501,7 @@ buttonpress(XEvent *e)
 		i = x = 0;
 		
         do{
-            if (open_tags & (1 << i))
+            if (m->open_tags & (1 << i))
 			    x += TEXTW(tags[i]);
         }while (ev->x >= x && ++i < LENGTH(tags));
 
@@ -858,11 +858,11 @@ drawbar(Monitor *m)
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
         if (!(occ & 1 << i) && !(m->tagset[m->seltags] & 1 << i)){
-            open_tags &= ~(1 << i);
+            m->open_tags &= ~(1 << i);
             continue;
         }
-        
-        open_tags |= (1 << i);
+        m->open_tags |= (1 << i);
+
 		w = TEXTW(tags[i]);
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
@@ -1687,7 +1687,7 @@ scrolltag(const Arg* arg)
 
     do {
         i += dir;
-    } while (i < LENGTH(tags) && i >= 0 && !(open_tags & (1 << i)));
+    } while (i < LENGTH(tags) && i >= 0 && !(m->open_tags & (1 << i)));
 
     if (i < LENGTH(tags) && i >= 0){
         Arg temparg;
