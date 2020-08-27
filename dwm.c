@@ -209,6 +209,7 @@ static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void incnmaster(const Arg *arg);
+static void inittags(void);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
@@ -1152,6 +1153,18 @@ isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 #endif /* XINERAMA */
 
 void
+inittags(void)
+{
+    int i;
+    
+    for (i = 0; i < LENGTH(tags); i++)
+        tags[i] = calloc(64, sizeof(char));
+
+    for (i = 0; i < DEFTAGSLEN; i++)
+        sprintf(tags[i], "%s", tagdef[i]);
+}
+
+void
 keypress(XEvent *e)
 {
 	unsigned int i;
@@ -2079,9 +2092,10 @@ void
 tagrename(Monitor *m)
 {
 	FILE* fp = popen("echo -e \"\\n\" | dmenu", "r");
-	char* ret = malloc(64 * sizeof(char));
-	int lne = fgets(ret, sizeof(ret)-1, fp);
+	char* ret = calloc(64, sizeof(char));
+	int lne = fgets(ret, sizeof(ret)-3, fp);
 	printf(ret);
+    free(tags[selmon->tagset[selmon->seltags]-1]);
 	tags[selmon->tagset[selmon->seltags]-1] = ret;
 	pclose(fp);
 }
@@ -2757,6 +2771,8 @@ main(int argc, char *argv[], char* envp[])
 {
 	gb_argv = argv;
 	gb_envp = envp;
+
+    inittags();
 
 	if (argc == 2 && !strcmp("-v", argv[1]))
 		die("dwm-"VERSION);

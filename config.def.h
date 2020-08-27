@@ -35,8 +35,12 @@ static Sp scratchpads[] = {
 };
 
 /* tagging */
-#define MAXTAGSLEN 32
-static char *tags[] = { "main", "dev", "media", "steam", "disc", "disp", "doc", "aux", "term" };
+#define MAXTAGSLEN 31
+#define DEFTAGSLEN 9
+
+static char *tags[MAXTAGSLEN];
+
+static const char *tagdef[DEFTAGSLEN] = { "main", "dev", "media", "steam", "disc", "disp", "doc", "aux", "term" };
 
 static const Rule rules[] = {
 	/* xprop(1):
