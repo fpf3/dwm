@@ -48,7 +48,7 @@
 #define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask)
 #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
 #define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
-                               * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
+							   * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
 #define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))
 #define LENGTH(X)               (sizeof X / sizeof X[0])
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
@@ -80,13 +80,13 @@
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
 enum { SchemeNorm, SchemeSel, SchemeUrg }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
-       NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
-       NetWMFullscreen, NetActiveWindow, NetWMWindowType,
-       NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
+	   NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
+	   NetWMFullscreen, NetActiveWindow, NetWMWindowType,
+	   NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
 enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
-       ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
+	   ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 
 typedef union {
 	int i;
@@ -147,7 +147,7 @@ struct Monitor {
 	unsigned int seltags;
 	unsigned int sellt;
 	unsigned int tagset[2];
-    unsigned int open_tags;
+	unsigned int open_tags;
 	int showbar;
 	int topbar;
 	Client *clients;
@@ -500,10 +500,10 @@ buttonpress(XEvent *e)
 	if (ev->window == selmon->barwin) {
 		i = x = 0;
 		
-        do{
-            if (m->open_tags & (1 << i))
+		do{
+			if (m->open_tags & (1 << i))
 			    x += TEXTW(tags[i]);
-        }while (ev->x >= x && ++i < LENGTH(tags));
+		}while (ev->x >= x && ++i < LENGTH(tags));
 
 		if (i < LENGTH(tags)) {
 			click = ClkTagBar;
@@ -523,12 +523,12 @@ buttonpress(XEvent *e)
 	for (i = 0; i < LENGTH(buttons); i++)
 		if (click == buttons[i].click && buttons[i].func && buttons[i].button == ev->button
 		&& CLEANMASK(buttons[i].mask) == CLEANMASK(ev->state)){
-            
-            if (click == ClkTagBar && (ev->button == Button4 || ev->button == Button5))
-                    arg.v = (void*) ev;
+			
+			if (click == ClkTagBar && (ev->button == Button4 || ev->button == Button5))
+					arg.v = (void*) ev;
 
 			buttons[i].func(click == ClkTagBar && buttons[i].arg.i == 0 ? &arg : &buttons[i].arg);
-        }
+		}
 }
 
 void
@@ -857,16 +857,16 @@ drawbar(Monitor *m)
 	}
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
-        if (!(occ & 1 << i) && !(m->tagset[m->seltags] & 1 << i)){
-            m->open_tags &= ~(1 << i);
-            continue;
-        }
-        m->open_tags |= (1 << i);
+		if (!(occ & 1 << i) && !(m->tagset[m->seltags] & 1 << i)){
+			m->open_tags &= ~(1 << i);
+			continue;
+		}
+		m->open_tags |= (1 << i);
 
 		w = TEXTW(tags[i]);
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-        // FPF3 : old code to draw non-empty tag indicator
+		// FPF3 : old code to draw non-empty tag indicator
 		//if (occ & 1 << i)
 		//	drw_rect(drw, x + boxs, boxs, boxw, boxw,
 		//		m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
@@ -1453,7 +1453,7 @@ recttomon(int x, int y, int w, int h)
 void
 reload(const Arg *arg)
 {
-    execve(gb_argv[0], gb_argv, gb_envp);
+	execve(gb_argv[0], gb_argv, gb_envp);
 }
 
 void
@@ -1608,8 +1608,8 @@ run(void)
 void
 runAutoStart(void)
 {
-    system("autostart_blocking.sh");
-    system("autostart.sh &");
+	system("autostart_blocking.sh");
+	system("autostart.sh &");
 }
 
 void
@@ -1667,33 +1667,33 @@ setclientstate(Client *c, long state)
 void
 scrolltag(const Arg* arg)
 {
-    XButtonPressedEvent* ev = (XButtonPressedEvent*) arg->v;
-    
-    int dir;
-    if (ev->button == Button4)
-        dir = -1;
-    else if (ev->button == Button5)
-        dir = 1;
-    else
-        return;
+	XButtonPressedEvent* ev = (XButtonPressedEvent*) arg->v;
+	
+	int dir;
+	if (ev->button == Button4)
+		dir = -1;
+	else if (ev->button == Button5)
+		dir = 1;
+	else
+		return;
 
-    Monitor* m = wintomon(ev->window);
+	Monitor* m = wintomon(ev->window);
   
-    int i;
-    for (i = 0; i < LENGTH(tags); i++){
-        if (m->tagset[m->seltags] & 1 << i)
-            break;
-    }
+	int i;
+	for (i = 0; i < LENGTH(tags); i++){
+		if (m->tagset[m->seltags] & 1 << i)
+			break;
+	}
 
-    do {
-        i += dir;
-    } while (i < LENGTH(tags) && i >= 0 && !(m->open_tags & (1 << i)));
+	do {
+		i += dir;
+	} while (i < LENGTH(tags) && i >= 0 && !(m->open_tags & (1 << i)));
 
-    if (i < LENGTH(tags) && i >= 0){
-        Arg temparg;
-        temparg.ui = (1 << i);
-        view(&temparg);
-    }
+	if (i < LENGTH(tags) && i >= 0){
+		Arg temparg;
+		temparg.ui = (1 << i);
+		view(&temparg);
+	}
 }
 
 int
@@ -2078,12 +2078,12 @@ tagmon(const Arg *arg)
 void
 tagrename(Monitor *m)
 {
-    FILE* fp = popen("echo -e \"\\n\" | dmenu", "r");
-    char* ret = malloc(64 * sizeof(char));
-    int lne = fgets(ret, sizeof(ret)-1, fp);
-    printf(ret);
-    tags[selmon->tagset[selmon->seltags]-1] = ret;
-    pclose(fp);
+	FILE* fp = popen("echo -e \"\\n\" | dmenu", "r");
+	char* ret = malloc(64 * sizeof(char));
+	int lne = fgets(ret, sizeof(ret)-1, fp);
+	printf(ret);
+	tags[selmon->tagset[selmon->seltags]-1] = ret;
+	pclose(fp);
 }
 
 void
@@ -2621,27 +2621,27 @@ updatewmhints(Client *c)
 void
 view(const Arg *arg)
 {
-    static unsigned int oldtag = 255;
-    static int toggleflag = 0;
+	static unsigned int oldtag = 255;
+	static int toggleflag = 0;
 
-    unsigned int curtag = selmon->tagset[selmon->seltags];
+	unsigned int curtag = selmon->tagset[selmon->seltags];
 
 	if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags]){
-        if (oldtag == 255)
-            return;
-        
-        toggleflag = 1;
-    }
+		if (oldtag == 255)
+			return;
+		
+		toggleflag = 1;
+	}
 	selmon->seltags ^= 1; /* toggle sel tagset */
 	if (arg->ui & TAGMASK){
-        if (toggleflag){
-            selmon->tagset[selmon->seltags] = oldtag & TAGMASK;
-            toggleflag = 0;
-        } else {
+		if (toggleflag){
+			selmon->tagset[selmon->seltags] = oldtag & TAGMASK;
+			toggleflag = 0;
+		} else {
 		selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
-        }
-    }
-    oldtag = curtag;
+		}
+	}
+	oldtag = curtag;
 	focus(NULL);
 	arrange(selmon);
 }
@@ -2755,8 +2755,8 @@ zoom(const Arg *arg)
 int
 main(int argc, char *argv[], char* envp[])
 {
-    gb_argv = argv;
-    gb_envp = envp;
+	gb_argv = argv;
+	gb_envp = envp;
 
 	if (argc == 2 && !strcmp("-v", argv[1]))
 		die("dwm-"VERSION);
@@ -2773,7 +2773,7 @@ main(int argc, char *argv[], char* envp[])
 		die("pledge");
 #endif /* __OpenBSD__ */
 	scan();
-    runAutoStart();
+	runAutoStart();
 	run();
 	cleanup();
 	XCloseDisplay(dpy);
