@@ -6,6 +6,8 @@ include config.mk
 SRC = drw.c dwm.c util.c
 OBJ = ${SRC:.c=.o}
 
+#CC=musl-gcc
+
 all: options dwm
 
 options:

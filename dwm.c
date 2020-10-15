@@ -206,6 +206,7 @@ static int getrootptr(int *x, int *y);
 static long getstate(Window w);
 static unsigned int getsystraywidth();
 static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
+static void globalview(const Arg* arg);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void incnmaster(const Arg *arg);
@@ -1091,6 +1092,23 @@ gettextprop(Window w, Atom atom, char *text, unsigned int size)
 	text[size - 1] = '\0';
 	XFree(name.value);
 	return 1;
+}
+
+void
+globalview(const Arg *arg)
+{
+    static Monitor* m;
+    static unsigned int curtag;
+
+    for (m=mons; m; m=m->next){
+        if ((arg->ui & TAGMASK) == m->tagset[m->seltags])
+    		continue;
+    	m->seltags ^= 1; /* toggle sel tagset */
+    	if (arg->ui & TAGMASK)
+    		m->tagset[m->seltags] = arg->ui & TAGMASK;
+    	focus(NULL);
+    	arrange(m);
+    }
 }
 
 void
