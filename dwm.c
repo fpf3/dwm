@@ -209,6 +209,7 @@ static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void incnmaster(const Arg *arg);
+static void inittags();
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
@@ -335,7 +336,7 @@ static char** gb_envp;
 #include "config.h"
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
-struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
+struct NumTags { char limitexceeded[LENGTH(deftags) > 31 ? -1 : 1]; };
 
 /* function implementations */
 void
@@ -1150,6 +1151,17 @@ isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 	return 1;
 }
 #endif /* XINERAMA */
+
+void
+inittags()
+{
+    int i;
+    for (i = 0; i < LENGTH(deftags); i++){
+        printf("Initializing tag %d to %s.\n", i, deftags[i]);
+        tags[i] = malloc(strlen(deftags[i]) * sizeof (char));
+        strncpy(tags[i], deftags[i], strlen(deftags[i]));
+    }
+}
 
 void
 keypress(XEvent *e)
@@ -2084,11 +2096,29 @@ tagmon(const Arg *arg)
 void
 tagrename(Monitor *m)
 {
+    int i;
 	FILE* fp = popen("echo -e \"\\n\" | dmenu", "r");
 	char* ret = malloc(64 * sizeof(char));
-	int lne = fgets(ret, sizeof(ret)-1, fp);
-	printf(ret);
-	tags[selmon->tagset[selmon->seltags]-1] = ret;
+    int lne = fgets(ret, 64, fp);
+
+    for (i = 0; i < 64; i++)
+        if (ret[i] < 65 || ret[i] > 122) // find first non-alpha char
+            break;
+
+    if (i == 0){ // no tag supplied.
+        free(ret);
+        pclose(fp);
+        return;
+    }
+
+    ret[i+1] = '\0';
+    char* newtag = malloc((i+1) * sizeof(char));
+    strcpy(newtag, ret);
+    free(ret);
+	
+	printf(newtag);
+    free(tags[selmon->tagset[selmon->seltags]-1]);
+	tags[selmon->tagset[selmon->seltags]-1] = newtag;
 	pclose(fp);
 }
 
@@ -2763,6 +2793,8 @@ main(int argc, char *argv[], char* envp[])
 {
 	gb_argv = argv;
 	gb_envp = envp;
+
+    inittags();
 
 	if (argc == 2 && !strcmp("-v", argv[1]))
 		die("dwm-"VERSION);
