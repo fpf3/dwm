@@ -1,5 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 
+#include "dwm.h"
 #include "colors-wal-dwm.h"
 
 /* appearance */
@@ -48,7 +49,7 @@ static const Rule rules[] = {
 	 */
 	/* class        instance        title           tags mask   isfloating  isterminal  noswallow  monitor */
 	{ NULL,		    "spterm",		NULL,		    SPTAG(0),	1,	        1,          1,		    -1 },
-	{ NULL,		    "spfm",		    NULL,		    SPTAG(1),	1,	        0,          0,  	    -1 },
+	{ NULL,		    "spranger",		NULL,		    SPTAG(1),	1,	        0,          0,  	    -1 },
 	{ NULL,		    "keepassxc",	NULL,		    SPTAG(2),	0,	        0,          0,  	    -1 },
 	{ "Gimp",       NULL,           NULL,           0,          1,          0,          0,          -1 },
 	{ "Firefox",    NULL,           NULL,           1 << 8,     0,          0,         -1,          -1 },
