@@ -48,7 +48,7 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class        instance        title           tags mask   isfloating  isterminal  noswallow  monitor */
-	{ NULL,		    "spterm",		NULL,		    SPTAG(0),	1,	        1,          1,		    -1 },
+	{ NULL,		    "spterm",		NULL,		    SPTAG(0),	1,	        0,          0,		    -1 },
 	{ NULL,		    "spranger",		NULL,		    SPTAG(1),	1,	        0,          0,  	    -1 },
 	{ NULL,		    "keepassxc",	NULL,		    SPTAG(2),	0,	        0,          0,  	    -1 },
 	{ "Gimp",       NULL,           NULL,           0,          1,          0,          0,          -1 },

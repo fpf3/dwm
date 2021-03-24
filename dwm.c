@@ -377,6 +377,8 @@ cleanup(void)
 		drw_cur_free(drw, cursor[i]);
 	for (i = 0; i < LENGTH(colors); i++)
 		free(scheme[i]);
+    for (i = 0; i < LENGTH(tags); i++)
+        free(tags[i]);
 	XDestroyWindow(dpy, wmcheckwin);
 	drw_free(drw);
 	XSync(dpy, False);
@@ -1945,10 +1947,17 @@ tagrename(Monitor *m)
     char* newtag = malloc((i+1) * sizeof(char));
     strcpy(newtag, ret);
     free(ret);
+
+    int curtagset = selmon->tagset[selmon->seltags];
+    int curtagindex = -1;
+    while (curtagset){
+        curtagset >>= 1;
+        curtagindex += 1;
+    }
 	
-	printf("%d, %s\n", selmon->tagset[selmon->seltags], newtag);
-    free(tags[selmon->tagset[selmon->seltags]-1]);
-	tags[selmon->tagset[selmon->seltags]-1] = newtag;
+	printf("%d, %s\n", curtagindex, newtag);
+    free(tags[curtagindex]);
+	tags[curtagindex] = newtag;
 	pclose(fp);
 }
 
@@ -2025,7 +2034,6 @@ togglescratch(const Arg *arg)
 	unsigned int found = 0;
 	unsigned int scratchtag = SPTAG(arg->ui);
 	Arg sparg = {.v = scratchpads[arg->ui].cmd};
-
 
 	for (c = selmon->clients; c && !(found = c->tags & scratchtag); c = c->next);
 	if (found) {
