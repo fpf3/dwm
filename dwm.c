@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -331,6 +332,9 @@ static Monitor *mons, *selmon;
 static Window root, wmcheckwin;
 static char** gb_argv;
 static char** gb_envp;
+
+static time_t ptime;
+static unsigned char pwork;
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
@@ -865,7 +869,11 @@ drawbar(Monitor *m)
 		m->open_tags |= (1 << i);
 
 		w = TEXTW(tags[i]);
-		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+        if (pwork)
+            drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+        else
+            drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeUrg : SchemeNorm]);
+
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
 		// FPF3 : old code to draw non-empty tag indicator
 		//if (occ & 1 << i)
@@ -880,7 +888,11 @@ drawbar(Monitor *m)
 
 	if ((w = m->ww - sw - stw - x) > bh) {
 		if (m->sel) {
-			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
+            if (m == selmon){
+                drw_setscheme(drw, scheme[pwork ? SchemeSel : SchemeUrg]);
+            } else {
+                drw_setscheme(drw, scheme[SchemeNorm]);
+            }
 			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
 			if (m->sel->isfloating)
 				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
@@ -2482,6 +2494,11 @@ updatesizehints(Client *c)
 void
 updatestatus(void)
 {
+
+    ptime = time(NULL);
+    int min= localtime(&ptime)->tm_min;
+    pwork = (min > 5 && !(min >= 30 && min < 35));
+
 	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
 		strcpy(stext, "dwm-"VERSION);
 	drawbar(selmon);
