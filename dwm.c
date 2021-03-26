@@ -2497,7 +2497,7 @@ updatestatus(void)
 
     ptime = time(NULL);
     int min= localtime(&ptime)->tm_min;
-    pwork = (min > 5 && !(min >= 30 && min < 35));
+    pwork = (min >= 5 && !(min >= 30 && min < 35));
 
 	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
 		strcpy(stext, "dwm-"VERSION);
