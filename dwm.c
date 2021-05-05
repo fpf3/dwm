@@ -873,9 +873,9 @@ drawbar(Monitor *m)
 
 		w = TEXTW(tags[i]);
         if (pwork && pomo_en)
-            drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-        else
             drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeUrg : SchemeNorm]);
+        else
+            drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
 
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
 		// FPF3 : old code to draw non-empty tag indicator
@@ -892,7 +892,7 @@ drawbar(Monitor *m)
 	if ((w = m->ww - sw - stw - x) > bh) {
 		if (m->sel) {
             if (m == selmon){
-                drw_setscheme(drw, scheme[(pwork && pomo_en) ? SchemeSel : SchemeUrg]);
+                drw_setscheme(drw, scheme[(pwork && pomo_en) ? SchemeUrg : SchemeSel]);
             } else {
                 drw_setscheme(drw, scheme[SchemeNorm]);
             }
