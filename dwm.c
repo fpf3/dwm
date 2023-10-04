@@ -1899,6 +1899,11 @@ bigtile(Monitor *m)
 
 	master_x_offs = (n > (m->nmaster + 1)) ? (m->ww - mw) / 2 : 0;
 
+    if (!master_x_offs) {
+        tile(m);
+        return;
+    }
+
 	int nslaves = n - m->nmaster;
 	int nslaves_r = ((nslaves & 1) + (nslaves>>1));
 	int nslaves_l = nslaves >> 1;
@@ -1928,23 +1933,15 @@ bigtile(Monitor *m)
 		} 
 
 		else {
-			if (n <= (m->nmaster + 1)) {
-				r = n - i;
-				h = (m->wh - ty - m->gappoh*oe - m->gappih*ie * (r - 1)) / r;
-				resize(c, m->wx + mw + m->gappov*oe, m->wy + ty, m->ww - mw - (2*c->bw) - 2*m->gappov*oe, h - (2*c->bw), 0);
-				ty += HEIGHT(c) + m->gappih*ie;
-			}
-			else {
-				slave_x_offs = (m->nmaster & 1) ? (i & 1) : ((~i) & 1);
-				slave_w = (n > (m->nmaster + 1)) ? ((m->ww - mw)/2) : (m->ww - mw); 
-				r = n - i;
-				h = slave_x_offs ? slave_h_r : slave_h_l;
-				ty = (h - (2*c->bw) + m->gappih*ie) * (slave_x_offs ? r_tyacc : l_tyacc) + m->gappih*ie;
+            slave_x_offs = ((i - m->nmaster) < nslaves_r) ? 1 : 0;
+            slave_w = (n > (m->nmaster + 1)) ? ((m->ww - mw)/2) : (m->ww - mw); 
+            r = n - i;
+            h = slave_x_offs ? slave_h_r : slave_h_l;
+            ty = (h - (2*c->bw) + m->gappih*ie) * (slave_x_offs ? r_tyacc : l_tyacc) + m->gappih*ie;
 
-				resize(c, m->wx + (mw + slave_w)*slave_x_offs + m->gappov*oe, m->wy + ty, slave_w - (2*c->bw) - 2*m->gappov*oe , h - (2*c->bw), 0);
-				r_tyacc += (slave_x_offs);
-				l_tyacc += (slave_x_offs^1);
-			}
+            resize(c, m->wx + (mw + slave_w)*slave_x_offs + m->gappov*oe, m->wy + ty, slave_w - (2*c->bw) - 2*m->gappov*oe , h - (2*c->bw), 0);
+            r_tyacc += slave_x_offs;
+            l_tyacc += !slave_x_offs;
 		}
 	}
 }
