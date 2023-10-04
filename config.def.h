@@ -20,6 +20,8 @@ static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 
+const char *unicode_cmd[] = {"unicode_select", NULL};
+
 typedef struct {
 	const char *name;
 	const void *cmd;
@@ -27,6 +29,7 @@ typedef struct {
 const char *spcmd1[] = {"st", "-n", "spterm", "-g", "120x34", NULL };
 const char *spcmd2[] = {"st", "-n", "spfm", "-g", "120x41", "-e", "ranger", NULL };
 const char *spcmd3[] = {"keepassxc", NULL };
+
 static Sp scratchpads[] = {
 	/* name          cmd  */
 	{"spterm",      spcmd1},
@@ -94,12 +97,13 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY|ShiftMask,             XK_Down,   spawn,          {.v = invertcmd } },
 	{ MODKEY|ShiftMask,             XK_Up,     spawn,          {.v = normalcmd } },
+    { MODKEY|ShiftMask,             XK_u,      spawn,          {.v = unicode_cmd} },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
+	{ MODKEY|ShiftMask,             XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY|ShiftMask,             XK_l,      setmfact,       {.f = +0.05} },
 	/** FPF3: The vanitygaps patch uses too many keybinds. Gonna comment them out until I need them.
 	{ MODKEY|Mod1Mask,              XK_h,      incrgaps,       {.i = +1 } },
