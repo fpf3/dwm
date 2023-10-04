@@ -1825,6 +1825,77 @@ tile(Monitor *m)
 		}
 }
 
+void 
+bigtile(Monitor *m)
+{
+	unsigned int i, n, h, r, oe = enablegaps, ie = enablegaps, mw, my, ty, master_x_offs, slave_x_offs, slave_w;
+	Client *c;
+
+	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+	if (n == 0)
+		return;
+
+	if (smartgaps == n) {
+		oe = 0; // outer gaps disabled
+	}
+
+	if (n > m->nmaster)
+		mw = m->nmaster ? (m->ww + m->gappiv*ie) * m->mfact : 0;
+	else
+		mw = m->ww - 2*m->gappov*oe + m->gappiv*ie;
+
+	master_x_offs = (n > (m->nmaster + 1)) ? (m->ww - mw) / 2 : 0;
+
+	int nslaves = n - m->nmaster;
+	int nslaves_r = ((nslaves & 1) + (nslaves>>1));
+	int nslaves_l = nslaves >> 1;
+
+	int slave_h_r;
+	if (nslaves_r)
+		slave_h_r = (m->wh - 2*m->gappoh*oe - m->gappih*ie * (nslaves_r-1)) / nslaves_r;
+	else
+		 slave_h_r = 0;
+
+	int slave_h_l;
+	if (nslaves_l)
+		slave_h_l = (m->wh - 2*m->gappoh*oe - m->gappih*ie * (nslaves_l-1)) / nslaves_l;
+	else
+	 	slave_h_l = 0;
+
+	int r_tyacc = 0;
+	int l_tyacc = 0;
+
+	for (i = 0, my = ty = m->gappoh*oe, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++){
+
+		if (i < m->nmaster) {
+			r = MIN(n, m->nmaster) - i;
+			h = (m->wh - my - m->gappoh*oe - m->gappih*ie * (r - 1)) / r;
+			resize(c, m->wx + m->gappov*oe + master_x_offs, m->wy + my, mw - (2*c->bw) - m->gappiv*ie, h - (2*c->bw), 0);
+			my += HEIGHT(c) + m->gappih*ie;
+		} 
+
+		else {
+			if (n <= (m->nmaster + 1)) {
+				r = n - i;
+				h = (m->wh - ty - m->gappoh*oe - m->gappih*ie * (r - 1)) / r;
+				resize(c, m->wx + mw + m->gappov*oe, m->wy + ty, m->ww - mw - (2*c->bw) - 2*m->gappov*oe, h - (2*c->bw), 0);
+				ty += HEIGHT(c) + m->gappih*ie;
+			}
+			else {
+				slave_x_offs = (m->nmaster & 1) ? (i & 1) : ((~i) & 1);
+				slave_w = (n > (m->nmaster + 1)) ? ((m->ww - mw)/2) : (m->ww - mw); 
+				r = n - i;
+				h = slave_x_offs ? slave_h_r : slave_h_l;
+				ty = (h - (2*c->bw) + m->gappih*ie) * (slave_x_offs ? r_tyacc : l_tyacc) + m->gappih*ie;
+
+				resize(c, m->wx + (mw + slave_w)*slave_x_offs + m->gappov*oe, m->wy + ty, slave_w - (2*c->bw) - 2*m->gappov*oe , h - (2*c->bw), 0);
+				r_tyacc += (slave_x_offs);
+				l_tyacc += (slave_x_offs^1);
+			}
+		}
+	}
+}
+
 void
 togglebar(const Arg *arg)
 {
