@@ -71,12 +71,12 @@ static const int resizehints = 1;    /* 1 means respect size hints in tiled resi
 #include "fibonacci.c"
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
+	{ "[[]]",     bigtile },
 	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
  	{ "[@]",      spiral },
  	{ "[\\]",     dwindle },
-	{ "[[]]",     bigtile },
+	{ "[]=",      tile },    /* first entry is default */
 };
 
 /* key definitions */
@@ -116,15 +116,15 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,            XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY|ShiftMask,            XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY,                      XK_Return, zoom,           {0} },
-	{ Mod1Mask,                    XK_Tab,    view,           {0} },
+	{ Mod1Mask,                    XK_Tab,    zoomnext,           {0} },
 	{ MODKEY|ShiftMask,            XK_q,      killclient,     {0} },
-	{ MODKEY,                      XK_t,      setlayout,      {.v = &layouts[0]} },
+	{MODKEY,					    XK_y,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                      XK_f,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                      XK_m,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY|ShiftMask,            XK_f,      fullscreen,     {0} },
 	{ MODKEY,                      XK_r,      setlayout,      {.v = &layouts[3]} },
 	{ MODKEY|ControlMask,          XK_r,      setlayout,      {.v = &layouts[4]} },
-	{MODKEY,					    XK_y,      setlayout,      {.v = &layouts[5]} },
+	{ MODKEY,                      XK_t,      setlayout,      {.v = &layouts[5]} },
+	{ MODKEY|ShiftMask,            XK_f,      fullscreen,     {0} },
 	{ MODKEY,                      XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,            XK_space,  togglefloating, {0} },
 	{ MODKEY,                      XK_0,      view,           {.ui = ~0 } },

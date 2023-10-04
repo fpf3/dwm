@@ -2536,6 +2536,21 @@ zoom(const Arg *arg)
 	pop(c);
 }
 
+void
+zoomnext(const Arg *arg)
+{
+	if (!selmon->lt[selmon->sellt]->arrange)
+		return;
+
+	Client* c;
+	for (c = selmon->clients; c->next; c = nexttiled(c->next)); // grab bottom of stack
+	c->next = selmon->sel;
+	selmon->clients = selmon->sel->next;
+	selmon->sel->next = NULL;
+	focus(selmon->clients);
+	arrange(selmon);
+}
+
 int
 main(int argc, char *argv[], char* envp[])
 {
