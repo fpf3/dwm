@@ -1,5 +1,9 @@
 /* See LICENSE file for copyright and license details. */
 
+#ifndef CONFIG_h
+
+#include <stddef.h>
+#include "util.h"
 #include "colors-wal-dwm.h"
 
 /* appearance */
@@ -179,3 +183,4 @@ static Button buttons[] = {
 	{ ClkTagBar,            0,              Button5,        scrolltag,      {0} },
 };
 
+#endif CONFIG_H
