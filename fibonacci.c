@@ -1,3 +1,6 @@
+#include "types.h"
+#include "funcprotos.h"
+
 void
 fibonacci(Monitor *mon, int s) {
 	unsigned int i, n, nx, ny, nw, nh;

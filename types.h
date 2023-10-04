@@ -1,3 +1,6 @@
+#ifndef TYPES_H
+#define TYPES_H
+
 #include <X11/cursorfont.h>
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
@@ -108,3 +111,4 @@ struct Systray {
 	Client *icons;
 };
 
+#endif /* TYPES_H */
