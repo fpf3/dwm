@@ -43,6 +43,7 @@
 #include <X11/Xft/Xft.h>
 #include <X11/Xlib-xcb.h>
 #include <xcb/res.h>
+#include <X11/XKBlib.h>
 
 #include "drw.h"
 #include "util.h"
@@ -340,12 +341,19 @@ cleanup(void)
 		XDestroyWindow(dpy, systray->win);
 		free(systray);
 	}
-	for (i = 0; i < CurLast; i++)
+	
+	for (i = 0; i < CurLast; i++){
 		drw_cur_free(drw, cursor[i]);
-	for (i = 0; i < LENGTH(colors); i++)
+	}
+
+	for (i = 0; i < LENGTH(colors); i++){
 		free(scheme[i]);
-    for (i = 0; i < LENGTH(tags); i++)
+	}
+
+    for (i = 0; i < LENGTH(tags); i++){
         free(tags[i]);
+	}
+
 	XDestroyWindow(dpy, wmcheckwin);
 	drw_free(drw);
 	XSync(dpy, False);
@@ -846,7 +854,7 @@ getstate(Window w)
 }
 
 unsigned int
-getsystraywidth()
+getsystraywidth(void)
 {
 	unsigned int w = 0;
 	Client *i;
@@ -884,7 +892,6 @@ void
 globalview(const Arg *arg)
 {
     static Monitor* m;
-    static unsigned int curtag;
 
     for (m=mons; m; m=m->next){
         if ((arg->ui & TAGMASK) == m->tagset[m->seltags])
@@ -963,7 +970,7 @@ keypress(XEvent *e)
 	XKeyEvent *ev;
 
 	ev = &e->xkey;
-	keysym = XKeycodeToKeysym(dpy, (KeyCode)ev->keycode, 0);
+	keysym = XkbKeycodeToKeysym(dpy, (KeyCode)ev->keycode, 0, 0);
 	for (i = 0; i < LENGTH(keys); i++)
 		if (keysym == keys[i].keysym
 		&& CLEANMASK(keys[i].mod) == CLEANMASK(ev->state)
@@ -1185,7 +1192,7 @@ nexttiled(Client *c)
 }
 
 void
-pomostart()
+pomostart(void)
 {
     pstart = time(NULL);
 }
@@ -2006,7 +2013,7 @@ updatebarpos(Monitor *m)
 }
 
 void
-updateclientlist()
+updateclientlist(void)
 {
 	Client *c;
 	Monitor *m;

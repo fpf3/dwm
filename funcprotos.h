@@ -33,7 +33,7 @@
  Atom getatomprop(Client *c, Atom prop);
  int getrootptr(int *x, int *y);
  long getstate(Window w);
- unsigned int getsystraywidth();
+ unsigned int getsystraywidth(void);
  int gettextprop(Window w, Atom atom, char *text, unsigned int size);
  void globalview(const Arg* arg);
  void grabbuttons(Client *c, int focused);
