@@ -2544,9 +2544,9 @@ zoomnext(const Arg *arg)
 
 	Client* c;
 	for (c = selmon->clients; c->next; c = nexttiled(c->next)); // grab bottom of stack
-	c->next = selmon->sel;
-	selmon->clients = selmon->sel->next;
-	selmon->sel->next = NULL;
+	c->next = selmon->clients;
+	selmon->clients = selmon->clients->next;
+	c->next->next = NULL;
 	focus(selmon->clients);
 	arrange(selmon);
 }
