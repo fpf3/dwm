@@ -53,7 +53,6 @@ static const Rule rules[] = {
 	{ NULL,		    "keepassxc",	NULL,		    SPTAG(2),	0,	         -1 },
 	{ "Gimp",       NULL,           NULL,           0,          1,           -1 },
 	{ "Firefox",    NULL,           NULL,           1 << 8,     0,           -1 },
-	{ "St",         NULL,           NULL,           0,          0,           -1 },
 	{ NULL,         NULL,           "Event Tester", 0,          0,           -1 }, /* xev */
 };
 
@@ -143,7 +142,6 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_t,      tagrename,      {0} },
 	{ MODKEY|ShiftMask,             XK_r,      reload,         {0} },
 	{ MODKEY,            			XK_u,  	   togglescratch,  {.ui = 0 } },
 	{ MODKEY|ShiftMask,            	XK_c,	   togglescratch,  {.ui = 1 } },

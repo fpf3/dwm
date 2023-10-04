@@ -57,10 +57,10 @@
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
-#define NUMTAGS					(LENGTH(deftags) + LENGTH(scratchpads))
+#define NUMTAGS					(LENGTH(tags) + LENGTH(scratchpads))
 #define TAGMASK     			((1 << NUMTAGS) - 1)
-#define SPTAG(i) 				((1 << LENGTH(deftags)) << (i))
-#define SPTAGMASK   			(((1 << LENGTH(scratchpads))-1) << LENGTH(deftags))
+#define SPTAG(i) 				((1 << LENGTH(tags)) << (i))
+#define SPTAGMASK   			(((1 << LENGTH(scratchpads))-1) << LENGTH(tags))
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
 
 #define SYSTEM_TRAY_REQUEST_DOCK    0
@@ -92,88 +92,88 @@ enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
 ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 
 typedef union {
-int i;
-unsigned int ui;
-float f;
-const void *v;
+	int i;
+	unsigned int ui;
+	float f;
+	const void *v;
 } Arg;
 
 typedef struct {
-unsigned int click;
-unsigned int mask;
-unsigned int button;
-void (*func)(const Arg *arg);
-const Arg arg;
+	unsigned int click;
+	unsigned int mask;
+	unsigned int button;
+	void (*func)(const Arg *arg);
+	const Arg arg;
 } Button;
 
 typedef struct Monitor Monitor;
 typedef struct Client Client;
 struct Client {
-char name[256];
-float mina, maxa;
-int x, y, w, h;
-int oldx, oldy, oldw, oldh;
-int basew, baseh, incw, inch, maxw, maxh, minw, minh;
-int bw, oldbw;
-unsigned int tags;
-int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
-Client *next;
-Client *snext;
-Monitor *mon;
-Window win;
+	char name[256];
+	float mina, maxa;
+	int x, y, w, h;
+	int oldx, oldy, oldw, oldh;
+	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
+	int bw, oldbw;
+	unsigned int tags;
+	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
+	Client *next;
+	Client *snext;
+	Monitor *mon;
+	Window win;
 };
 
 typedef struct {
-unsigned int mod;
-KeySym keysym;
-void (*func)(const Arg *);
-const Arg arg;
+	unsigned int mod;
+	KeySym keysym;
+	void (*func)(const Arg *);
+	const Arg arg;
 } Key;
 
 typedef struct {
-const char *symbol;
-void (*arrange)(Monitor *);
+	const char *symbol;
+	void (*arrange)(Monitor *);
 } Layout;
 
 struct Monitor {
-char ltsymbol[16];
-float mfact;
-int nmaster;
-int num;
-int by;               /* bar geometry */
-int mx, my, mw, mh;   /* screen size */
-int wx, wy, ww, wh;   /* window area  */
-int gappih;           /* horizontal gap between windows */
-int gappiv;           /* vertical gap between windows */
-int gappoh;           /* horizontal outer gaps */
-int gappov;           /* vertical outer gaps */
-unsigned int seltags;
-unsigned int sellt;
-unsigned int tagset[2];
-unsigned int open_tags;
-int showbar;
-int topbar;
-Client *clients;
-Client *sel;
-Client *stack;
-Monitor *next;
-Window barwin;
-const Layout *lt[2];
+	char ltsymbol[16];
+	float mfact;
+	int nmaster;
+	int num;
+	int by;               /* bar geometry */
+	int mx, my, mw, mh;   /* screen size */
+	int wx, wy, ww, wh;   /* window area  */
+	int gappih;           /* horizontal gap between windows */
+	int gappiv;           /* vertical gap between windows */
+	int gappoh;           /* horizontal outer gaps */
+	int gappov;           /* vertical outer gaps */
+	unsigned int seltags;
+	unsigned int sellt;
+	unsigned int tagset[2];
+	unsigned int open_tags;
+	int showbar;
+	int topbar;
+	Client *clients;
+	Client *sel;
+	Client *stack;
+	Monitor *next;
+	Window barwin;
+	const Layout *lt[2];
 };
 
 typedef struct {
-const char *class;
-const char *instance;
-const char *title;
-unsigned int tags;
-int isfloating;
-int monitor;
+	const char *class;
+	const char *instance;
+	const char *title;
+	unsigned int tags;
+	int isfloating;
+	int monitor;
 } Rule;
 
 typedef struct Systray   Systray;
 struct Systray {
-Window win;
-Client *icons;
+	Window win;
+	Client *icons;
 };
 
 /* function declarations */
@@ -213,7 +213,6 @@ static void globalview(const Arg* arg);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void incnmaster(const Arg *arg);
-static void inittags();
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
@@ -267,7 +266,6 @@ static void spawn(const Arg *arg);
 static Monitor *systraytomon(Monitor *m);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
-static void tagrename();
 static void tile(Monitor *);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
@@ -347,7 +345,7 @@ static unsigned char pwork;
 #include "config.h"
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
-struct NumTags { char limitexceeded[LENGTH(deftags) > 31 ? -1 : 1]; };
+struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 
 /* function implementations */
 void
@@ -1189,16 +1187,6 @@ isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 	return 1;
 }
 #endif /* XINERAMA */
-
-void
-inittags()
-{
-    int i;
-    for (i = 0; i < LENGTH(deftags); i++){
-        tags[i] = malloc(strlen(deftags[i]) * sizeof (char));
-        strncpy(tags[i], deftags[i], strlen(deftags[i]));
-    }
-}
 
 void
 keypress(XEvent *e)
@@ -2143,42 +2131,6 @@ tagmon(const Arg *arg)
 }
 
 void
-tagrename(Monitor *m)
-{
-    int i;
-	FILE* fp = popen("echo -e \"\\n\" | dmenu", "r");
-	char* ret = malloc(64 * sizeof(char));
-    int lne = fgets(ret, 64, fp);
-
-    for (i = 0; i < 64; i++)
-        if (ret[i] < 65 || ret[i] > 122) // find first non-alpha char
-            break;
-
-    if (i == 0){ // no tag supplied.
-        free(ret);
-        pclose(fp);
-        return;
-    }
-
-    ret[i+1] = '\0';
-    char* newtag = malloc((i+1) * sizeof(char));
-    strcpy(newtag, ret);
-    free(ret);
-
-    int curtagset = selmon->tagset[selmon->seltags];
-    int curtagindex = -1;
-    while (curtagset){
-        curtagset >>= 1;
-        curtagindex += 1;
-    }
-	
-	printf("%d, %s\n", curtagindex, newtag);
-    free(tags[curtagindex]);
-	tags[curtagindex] = newtag;
-	pclose(fp);
-}
-
-void
 tile(Monitor *m)
 {
 	unsigned int i, n, h, r, oe = enablegaps, ie = enablegaps, mw, my, ty;
@@ -2855,8 +2807,6 @@ main(int argc, char *argv[], char* envp[])
 {
 	gb_argv = argv;
 	gb_envp = envp;
-
-    inittags();
 
 	if (argc == 2 && !strcmp("-v", argv[1]))
 		die("dwm-"VERSION);
