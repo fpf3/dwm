@@ -1,6 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
-#ifndef CONFIG_h
+#ifndef CONFIG_H
+#define CONFIG_H
 
 #include <stddef.h>
 #include "util.h"
@@ -183,4 +184,4 @@ static Button buttons[] = {
 	{ ClkTagBar,            0,              Button5,        scrolltag,      {0} },
 };
 
-#endif CONFIG_H
+#endif /* CONFIG_H */
