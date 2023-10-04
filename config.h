@@ -4,6 +4,8 @@
 #define CONFIG_H
 
 #include <stddef.h>
+#include "types.h"
+#include "funcprotos.h"
 #include "util.h"
 #include "colors-wal-dwm.h"
 

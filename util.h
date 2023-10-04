@@ -1,3 +1,5 @@
+#ifndef UTIL_H
+#define UTIL_H
 /* See LICENSE file for copyright and license details. */
 #include <stddef.h>
 
@@ -23,3 +25,4 @@ void *ecalloc(size_t nmemb, size_t size);
 #define SPTAG(i) 				((1 << LENGTH(tags)) << (i))
 #define SPTAGMASK   			(((1 << LENGTH(scratchpads))-1) << LENGTH(tags))
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
+#endif /* UTIL_H */
