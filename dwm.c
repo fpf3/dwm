@@ -1446,17 +1446,22 @@ restore_session(void)
 	if (!fr)
 		return;
 
-	char *str = malloc(23 * sizeof(char)); // allocate enough space for excepted input from text file
+	char *str = malloc(25 * sizeof(char)); // allocate enough space for excepted input from text file
 	while (fscanf(fr, "%[^\n] ", str) != EOF) { // read file till the end
 		long unsigned int winId;
+		int monitorNum;
 		unsigned int tagsForWin;
-		int check = sscanf(str, "%lu %u", &winId, &tagsForWin); // get data
-		if (check != 2) // break loop if data wasn't read correctly
+		int check = sscanf(str, "%lu %d %u", &winId, &monitorNum, &tagsForWin); // get data
+		if (check != 3) // break loop if data wasn't read correctly
 			break;
-		
+
 		for (Client *c = selmon->clients; c ; c = c->next) { // add tags to every window by winId
 			if (c->win == winId) {
+				Monitor* m;
+				for (m = mons; m->num != monitorNum; m = m->next);
 				c->tags = tagsForWin;
+				if (m != selmon)
+					sendmon(c, m);
 				break;
 			}
 		}
@@ -1530,8 +1535,10 @@ void
 save_session(void)
 {
 	FILE *fw = fopen(SESSION_FILE, "w");
-	for (Client *c = selmon->clients; c != NULL; c = c->next) {
-		fprintf(fw, "%lu %u\n", c->win, c->tags);
+	for (Monitor* m = mons; m != NULL; m = m->next){
+		for (Client *c = m->clients; c != NULL; c = c->next) {
+			fprintf(fw, "%lu %d %u\n", c->win, m->num, c->tags);
+		}
 	}
 	fclose(fw);
 }
