@@ -108,6 +108,7 @@ static char** gb_envp;
 static unsigned char pomo_en = 0;
 static time_t ptime, pstart;
 static unsigned char pwork;
+static int restart = 0;
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
@@ -1278,6 +1279,10 @@ propertynotify(XEvent *e)
 void
 quit(const Arg *arg)
 {
+	if (arg->i) {
+		restart = 1;
+		save_session();
+	}
 	running = 0;
 }
 
@@ -1293,12 +1298,6 @@ recttomon(int x, int y, int w, int h)
 			r = m;
 		}
 	return r;
-}
-
-void
-reload(const Arg *arg)
-{
-	execve(gb_argv[0], gb_argv, gb_envp);
 }
 
 void
@@ -1440,6 +1439,45 @@ restack(Monitor *m)
 }
 
 void
+restore_session(void)
+{
+	// restore session
+	FILE *fr = fopen(SESSION_FILE, "r");
+	if (!fr)
+		return;
+
+	char *str = malloc(23 * sizeof(char)); // allocate enough space for excepted input from text file
+	while (fscanf(fr, "%[^\n] ", str) != EOF) { // read file till the end
+		long unsigned int winId;
+		unsigned int tagsForWin;
+		int check = sscanf(str, "%lu %u", &winId, &tagsForWin); // get data
+		if (check != 2) // break loop if data wasn't read correctly
+			break;
+		
+		for (Client *c = selmon->clients; c ; c = c->next) { // add tags to every window by winId
+			if (c->win == winId) {
+				c->tags = tagsForWin;
+				break;
+			}
+		}
+    }
+
+	for (Client *c = selmon->clients; c ; c = c->next) { // refocus on windows
+		focus(c);
+		restack(c->mon);
+	}
+
+	for (Monitor *m = selmon; m; m = m->next) // rearrange all monitors
+		arrange(m);
+
+	free(str);
+	fclose(fr);
+	
+	// delete a file
+	remove(SESSION_FILE);
+}
+
+void
 rotatestack(const Arg *arg)
 {
 	Client *c = NULL;
@@ -1486,6 +1524,16 @@ runAutoStart(void)
 {
 	system("autostart_blocking.sh");
 	system("autostart.sh &");
+}
+
+void
+save_session(void)
+{
+	FILE *fw = fopen(SESSION_FILE, "w");
+	for (Client *c = selmon->clients; c != NULL; c = c->next) {
+		fprintf(fw, "%lu %u\n", c->win, c->tags);
+	}
+	fclose(fw);
 }
 
 void
@@ -1647,10 +1695,23 @@ setfullscreen(Client *c, int fullscreen)
 	}
 }
 
-Layout *last_layout;
+void
+sighup_handle(int unused)
+{
+	Arg a = {.i = 1};
+	quit(&a);
+}
+
+void sigterm_handle(int unused)
+{
+	Arg a = {0};
+	quit(&a);
+}
+
 void
 fullscreen(const Arg *arg)
 {
+	static Layout *last_layout = &((Layout*)layouts)[0];
 	if (selmon->showbar) {
 		for(last_layout = (Layout *)layouts; last_layout != selmon->lt[selmon->sellt]; last_layout++);
 		setlayout(&((Arg) { .v = &layouts[2] }));
@@ -1698,6 +1759,10 @@ setup(void)
 
 	/* clean up any zombies immediately */
 	sigchld(0);
+
+	/* set up hangup and term handlers */
+	signal(SIGHUP, sighup_handle);
+	signal(SIGTERM, sigterm_handle);
 
 	/* init screen */
 	screen = DefaultScreen(dpy);
@@ -2589,6 +2654,7 @@ zoom(const Arg *arg)
 int
 main(int argc, char *argv[], char* envp[])
 {
+    printf("Starting dwm...\n");
 	gb_argv = argv;
 	gb_envp = envp;
 
@@ -2607,8 +2673,13 @@ main(int argc, char *argv[], char* envp[])
 		die("pledge");
 #endif /* __OpenBSD__ */
 	scan();
+	restore_session();
 	runAutoStart();
 	run();
+	if (restart){
+        printf("Restarting dwm from %s...\n", argv[0]);
+        execvp(argv[0], argv);
+    }
 	cleanup();
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;

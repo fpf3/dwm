@@ -9,6 +9,8 @@
 #include "util.h"
 #include "colors-wal-dwm.h"
 
+#define SESSION_FILE "/tmp/dwm-session"
+
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int gappx     = 5;        /* gaps between windows */
@@ -69,7 +71,7 @@ static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
 
 #include "fibonacci.c"
-static const Layout layouts[] = {
+const Layout layouts[] = {
 	/* symbol     arrange function */
 	{ "[[]]",     bigtile },
 	{ "><>",      NULL },    /* no layout function means floating behavior */
@@ -127,13 +129,13 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,            XK_f,      fullscreen,     {0} },
 	{ MODKEY,                      XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,            XK_space,  togglefloating, {0} },
-	{ MODKEY,                      XK_0,      view,           {.ui = ~0 } },
-	{ MODKEY|ShiftMask,            XK_0,      tag,            {.ui = ~0 } },
+	{ MODKEY,                      XK_0,      view,           {.ui = ~0 }},
+	{ MODKEY|ShiftMask,            XK_0,      tag,            {.ui = ~0 }},
 	{ MODKEY,                      XK_comma,  focusmon,       {.i = -1 } },
 	{ MODKEY,                      XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,            XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,            XK_period, tagmon,         {.i = +1 } },
-	{ MODKEY|ShiftMask,            XK_r,      reload,         {0} },
+	{ MODKEY|ShiftMask,            XK_r,      quit,           {.i =  1}  },
 	{ MODKEY,            			XK_u,  	   togglescratch,  {.ui = 0 } },
 	{ MODKEY|ShiftMask,            XK_c,	   togglescratch,  {.ui = 1 } },
 	{ MODKEY,            			XK_x,	   togglescratch,  {.ui = 2 } },
