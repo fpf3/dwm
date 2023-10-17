@@ -1353,6 +1353,35 @@ quit(const Arg *arg)
 	running = 0;
 }
 
+void
+quitprompt(const Arg *arg)
+{
+	Arg qarg;
+	char prompt_cmd[68]; // XXX buf size is close!
+	sprintf(prompt_cmd, "echo -e \"No\\nRestart\\nYes\" | dmenu -i -sb \"%s\" -p \"Quit DWM?\"", sel_bg);
+	printf("%s\n", prompt_cmd);
+	FILE *pp = popen(prompt_cmd, "r");
+	if(pp != NULL) {
+		char buf[1024];
+		if (fgets(buf, sizeof(buf), pp) == NULL) {
+			fprintf(stderr, "Quitprompt: Error reading pipe!\n");
+			return;
+		}
+		if (strcmp(buf, "Yes\n") == 0) {
+			pclose(pp);
+			qarg.i = 0;
+			quit(&qarg);
+		} else if (strcmp(buf, "Restart\n") == 0) {
+			pclose(pp);
+			qarg.i = 1;
+			quit(&qarg);
+		} else if (strcmp(buf, "No\n") == 0) {
+			pclose(pp);
+			return;
+		}
+	}
+}
+
 Monitor *
 recttomon(int x, int y, int w, int h)
 {

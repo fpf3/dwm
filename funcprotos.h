@@ -58,6 +58,7 @@ void pomostart(void);
 void pop(Client *);
 void propertynotify(XEvent *e);
 void quit(const Arg *arg);
+void quitprompt(const Arg *arg);
 Monitor *recttomon(int x, int y, int w, int h);
 void reload(const Arg *arg);
 void removesystrayicon(Client *i);

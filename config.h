@@ -138,7 +138,6 @@ static Key keys[] = {
 	{ MODKEY,                      XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,            XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,            XK_period, tagmon,         {.i = +1 } },
-	{ MODKEY|ShiftMask,            XK_r,      quit,           {.i =  1}  },
 	{ MODKEY,            			XK_u,  	   togglescratch,  {.ui = 0 } },
 	{ MODKEY|ShiftMask,            XK_c,	   togglescratch,  {.ui = 1 } },
 	{ MODKEY,            			XK_x,	   togglescratch,  {.ui = 2 } },
@@ -152,7 +151,7 @@ static Key keys[] = {
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
-	{ MODKEY|ShiftMask,             XK_e,      quit,           {0} },
+	{ MODKEY|ShiftMask,             XK_e,      quitprompt,           {0} },
 };
 
 /* button definitions */
