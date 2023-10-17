@@ -27,7 +27,7 @@ static const int smartgaps          = 0;        /* 1 means no outer gap when the
 static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "monospace:size=10" };
+static const char *fonts[]          = { "monospace:size=11" };
 static const char dmenufont[]       = "monospace:size=10";
 
 const char *unicode_cmd[] = {"unicode_select", NULL};
@@ -49,7 +49,9 @@ static Sp scratchpads[] = {
 
 /* tagging */
 #define MAXTAGSLEN 32
-static char *tags[] = { "web", "dev1", "dev2", "dev3", "chat", "doc1", "doc2", "status", "term" };
+static char *tags[] = { "🌐", "🖥️", "🖥️", "📧", "💬", "📄", "📄", "📊", "🖮" };
+static char *tagsalt[] = { "web", "dev1", "dev2", "email", "chat", "doc1", "doc2", "status", "term" };
+static const int momentaryalttags = 0;
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -140,6 +142,7 @@ static Key keys[] = {
 	{ MODKEY,            			XK_u,  	   togglescratch,  {.ui = 0 } },
 	{ MODKEY|ShiftMask,            XK_c,	   togglescratch,  {.ui = 1 } },
 	{ MODKEY,            			XK_x,	   togglescratch,  {.ui = 2 } },
+	{ MODKEY,						XK_n,	   togglealttag,   {0} },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)

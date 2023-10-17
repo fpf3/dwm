@@ -87,6 +87,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 	[Expose] = expose,
 	[FocusIn] = focusin,
 	[KeyPress] = keypress,
+	[KeyRelease] = keyrelease,
 	[MappingNotify] = mappingnotify,
 	[MapRequest] = maprequest,
 	[MotionNotify] = motionnotify,
@@ -107,6 +108,9 @@ static char** gb_envp;
 
 /* swallow */
 static xcb_connection_t *xcon;
+
+/* alternativetag */
+static unsigned int alttag = 0;
 
 static unsigned char pomo_en = 0;
 static time_t ptime, pstart;
@@ -652,6 +656,8 @@ drawbar(Monitor *m)
 			urg |= c->tags;
 	}
 	x = 0;
+	char** seltags = alttag ? tagsalt : tags;
+	
 	for (i = 0; i < LENGTH(tags); i++) {
 		if (!(occ & 1 << i) && !(m->tagset[m->seltags] & 1 << i)){
 			m->open_tags &= ~(1 << i);
@@ -659,13 +665,13 @@ drawbar(Monitor *m)
 		}
 		m->open_tags |= (1 << i);
 
-		w = TEXTW(tags[i]);
+		w = TEXTW(seltags[i]);
         if (pwork && pomo_en)
             drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeUrg : SchemeNorm]);
         else
             drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
 
-		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+		drw_text(drw, x, 0, w, bh, lrpad / 2, seltags[i], urg & 1 << i);
 		// FPF3 : old code to draw non-empty tag indicator
 		//if (occ & 1 << i)
 		//	drw_rect(drw, x + boxs, boxs, boxw, boxw,
@@ -1034,6 +1040,28 @@ keypress(XEvent *e)
 		&& CLEANMASK(keys[i].mod) == CLEANMASK(ev->state)
 		&& keys[i].func)
 			keys[i].func(&(keys[i].arg));
+}
+
+void
+keyrelease(XEvent *e)
+{
+	unsigned int i;
+	KeySym keysym;
+	XKeyEvent *ev;
+
+	ev = &e->xkey;
+	keysym = XkbKeycodeToKeysym(dpy, (KeyCode)ev->keycode, 0, 0);
+
+	for (i = 0; i < LENGTH(keys); i++)
+	{
+		if (momentaryalttags
+		&&	keys[i].func && keys[i].func == toggletag
+		&&	alttag
+		&&	(keysym == keys[i].keysym || CLEANMASK(keys[i].mod) == CLEANMASK(ev->state)))
+		{
+			keys[i].func(&keys[i].arg);
+		}
+	}
 }
 
 void
@@ -2118,6 +2146,13 @@ bigtile(Monitor *m)
             l_tyacc += !slave_x_offs;
 		}
 	}
+}
+
+void
+togglealttag(const Arg* unused)
+{
+	alttag = !alttag;
+	drawbar(selmon);
 }
 
 void
