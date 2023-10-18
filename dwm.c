@@ -288,10 +288,12 @@ buttonpress(XEvent *e)
 	}
 	if (ev->window == selmon->barwin) {
 		i = x = 0;
+
+		char** seltags = alttag ? tagsalt : tags;
 		
 		do{
 			if (m->open_tags & (1 << i))
-			    x += TEXTW(tags[i]);
+			    x += TEXTW(seltags[i]);
 		}while (ev->x >= x && ++i < LENGTH(tags));
 
 		if (i < LENGTH(tags)) {
