@@ -37,7 +37,7 @@ typedef struct {
 	const void *cmd;
 } Sp;
 const char *spcmd1[] = {"st", "-n", "spterm", "-g", "120x34", NULL };
-const char *spcmd2[] = {"st", "-n", "spfm", "-g", "120x41", "-e", "ranger", NULL };
+const char *spcmd2[] = {"st", "-n", "spfm", "-g", "120x34", "-e", "ranger", NULL };
 const char *spcmd3[] = {"keepassxc", NULL };
 
 static Sp scratchpads[] = {
@@ -49,7 +49,7 @@ static Sp scratchpads[] = {
 
 /* tagging */
 #define MAXTAGSLEN 32
-static char *tags[] = { "🌐", "🖥️", "🖥️", "📧", "💬", "📄", "📄", "📊", "🖮" };
+static char *tags[] = { "🌐", "🖥️", "🖥️", "📧", "💬", "📄", "📄", "📊", "💲" };
 static char *tagsalt[] = { "web", "dev1", "dev2", "email", "chat", "doc1", "doc2", "status", "term" };
 static const int momentaryalttags = 0;
 
