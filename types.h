@@ -72,6 +72,16 @@ typedef struct {
 	void (*arrange)(Monitor *);
 } Layout;
 
+#define NUM_TAGS 33 // <-- needs to be greater than LENGTH(tags)... XXX check this if there's problems
+typedef struct {
+	unsigned int curtag, prevtag; 
+	int nmasters[NUM_TAGS]; 
+	float mfacts[NUM_TAGS];
+	unsigned int sellts[NUM_TAGS];
+	const Layout *ltidxs[NUM_TAGS][2];
+	int showbars[NUM_TAGS];
+} Pertag;
+
 struct Monitor {
 	char ltsymbol[16];
 	float mfact;
@@ -96,8 +106,8 @@ struct Monitor {
 	Monitor *next;
 	Window barwin;
 	const Layout *lt[2];
+	Pertag *pertag;
 };
-
 typedef struct {
 	const char *class;
 	const char *instance;
