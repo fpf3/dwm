@@ -2752,19 +2752,19 @@ view(const Arg *arg)
 	int i;
 	unsigned int curtag = selmon->pertag->curtag;
 
-	selmon->seltags ^= 1; /* toggle sel tagset */
 	if (arg->ui & TAGMASK){
 		if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags]){
 			selmon->pertag->curtag = selmon->pertag->prevtag;
 		}
 		else {
-			selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
+			selmon->tagset[selmon->seltags^1] = arg->ui & TAGMASK;
 			for (i = 0; !(arg->ui & 1 << i); i++);
 			selmon->pertag->curtag = i + 1;
 		}
 		selmon->pertag->prevtag = curtag;
 	}
 	
+	selmon->seltags ^= 1; /* toggle sel tagset */
 	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
 	selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];
 	selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
