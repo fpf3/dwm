@@ -1563,9 +1563,9 @@ restore_session(void)
 			if (c->win == winId) {
 				Monitor* m;
 				for (m = mons; m->num != monitorNum; m = m->next);
-				c->tags = tagsForWin;
 				if (m != selmon)
 					sendmon(c, m);
+				c->tags = tagsForWin;
 				break;
 			}
 		}
