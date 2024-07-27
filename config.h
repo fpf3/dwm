@@ -32,7 +32,10 @@ static const char *fonts[]          = { "monospace:size=11",
 										"JoyPixels:pixelsize=16"};
 static const char dmenufont[]       = "monospace:size=10";
 
-const char *unicode_cmd[] = {"unicode_select", NULL};
+//const char *unicode_cmd[] = {"unicode_select", NULL};
+const char *unicode_cmd[] = {"rofimoji", NULL};
+
+const float refresh_interval = 1000. / 144.;
 
 typedef struct {
 	const char *name;
@@ -170,7 +173,7 @@ static Button buttons[] = {
 	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
-	{ ClkClientWin,         MODKEY,         Button1,        resizemouse,    {0} },
+	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
 	{ ClkTagBar,            0,              Button1,        view,           {0} },
 	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },

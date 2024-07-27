@@ -1,16 +1,22 @@
 # shell for dev and debug
 { pkgs ? import <nixpkgs> {} }:
-    pkgs.mkShell {
+pkgs.mkShell {
+    buildInputs = 
+    with pkgs; [
+      dmenu
+      feh
+      gnumake
+      lukesmithxyz-st
+      rofimoji
+    ];
+
     nativeBuildInputs = with pkgs.buildPackages;
     [
-        dmenu
-        feh
-        gnumake
-        st
-        xorg.libX11
-        xorg.libXft
-        xorg.libXinerama
-        xorg.libxcb
+      xorg.xev
+      xorg.libX11
+      xorg.libXft
+      xorg.libXinerama
+      xorg.libxcb
     ];
     
     shellHook = ''

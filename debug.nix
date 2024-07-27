@@ -10,10 +10,7 @@ stdenv.mkDerivation rec {
   pname = "dwm";
   version = "6.2-fpf3+";
   
-  src = fetchGit {
-    url = "https://github.com/fpf3/dwm.git";
-    ref = "master";
-  };
+  src = ./.;
   
   buildInputs = [ libX11 libXinerama libXft ];
 
