@@ -27,9 +27,10 @@ static const int smartgaps          = 0;        /* 1 means no outer gap when the
 static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "monospace:size=11", 
-										"NotoColorEmoji:pixelsize=16:antialias=true:autohint=true", 
-										"JoyPixels:pixelsize=16"};
+static const char *fonts[]          = { "monospace:size=", 
+										"NotoColorEmoji:antialias=true:autohint=true:pixelsize=", 
+										"JoyPixels:pixelsize="};
+static const char* defaultfont = "monospace";
 static const char dmenufont[]       = "monospace:size=10";
 
 //const char *unicode_cmd[] = {"unicode_select", NULL};
@@ -125,6 +126,8 @@ static Key keys[] = {
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
 	{ MODKEY|ShiftMask,            XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY|ShiftMask,            XK_l,      setmfact,       {.f = +0.05} },
+    { MODKEY|ControlMask,          XK_Up,      bumpfontsize,  {.i = +1} },
+    { MODKEY|ControlMask,          XK_Down,    bumpfontsize,  {.i = -1} },
 	{ MODKEY,                      XK_Return, zoom,           {0} },
 	{ Mod1Mask,                    XK_Tab,    rotatestack,    {0} },
 	{ MODKEY,                    	XK_Tab,    view,           {0} },

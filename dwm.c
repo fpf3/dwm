@@ -117,8 +117,11 @@ static time_t ptime, pstart;
 static unsigned char pwork;
 static int restart = 0;
 
+
 /* configuration, allows nested code to access above variables */
 #include "config.h"
+
+static int fontsizes[LENGTH(fonts)] = {11, 16, 16};
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
@@ -648,6 +651,7 @@ drawbar(Monitor *m)
 	int x, w, sw = 0, stw = 0;
 	int boxs = drw->fonts->h / 9;
 	int boxw = drw->fonts->h / 6 + 2;
+
 	unsigned int i, occ = 0, urg = 0;
 	Client *c;
 
@@ -849,6 +853,32 @@ focusstack(const Arg *arg)
 		focus(c);
 		restack(selmon);
 	}
+}
+
+char** 
+fontset_gen(void)
+{
+    int i;
+    static const int numfonts = LENGTH(fonts);
+    char** fontset;
+    fontset = malloc((numfonts+1) * sizeof(char*));
+    for (i = 0; i < numfonts; i++)
+    {
+        fontset[i] = malloc(128);
+        sprintf(fontset[i], "%s%d", fonts[i], fontsizes[i]);
+    }
+    fontset[numfonts] = (char*)NULL;
+
+    return fontset;
+}
+
+void
+fontset_free(char** fontset)
+{
+    char** tmpfs = fontset;
+    while (*fontset)
+        free(*(fontset++));
+    free(tmpfs);
 }
 
 Atom
@@ -1872,8 +1902,12 @@ setup(void)
 	sh = DisplayHeight(dpy, screen);
 	root = RootWindow(dpy, screen);
 	drw = drw_create(dpy, screen, root, sw, sh);
-	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
+    char** fontset = fontset_gen();
+    for (i = 0; fontset[i] && i < LENGTH(fonts); i++)
+        printf("%s\n", fontset[i]);
+	if (!drw_fontset_create(drw, fontset, LENGTH(fonts)))
 		die("no fonts could be loaded.");
+    fontset_free(fontset);
 	lrpad = drw->fonts->h;
 	bh = drw->fonts->h + 2;
 	updategeom();
@@ -2174,6 +2208,28 @@ bigtile(Monitor *m)
             l_tyacc += !slave_x_offs;
 		}
 	}
+}
+
+void 
+bumpfontsize(Arg* arg)
+{
+    int i;
+    Fnt* tmpfont;
+
+    for(i = 0; i < LENGTH(fonts); i++)
+    {
+        fontsizes[i] += arg->i;
+        if (fontsizes[i] < 1)
+            fontsizes[i] = 1;
+    }
+
+    char** fontset = fontset_gen();
+    drw_fontset_free(drw->fonts);
+    drw_fontset_create(drw, fontset, LENGTH(fonts));
+    fontset_free(fontset);
+    lrpad = drw->fonts->h;
+    bh = drw->fonts->h + 2;
+    updategeom();
 }
 
 void
