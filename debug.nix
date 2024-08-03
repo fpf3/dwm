@@ -1,10 +1,9 @@
-{ pkgs, lib, stdenv, fetchurl, libX11, libXinerama, libXft, writeText, patches ? [ ], conf ? null
+{ lib, stdenv, fetchurl, libX11, libXinerama, libXft, writeText, pkgs, patches ? [ ], conf ? null
 # update script dependencies
 , gitUpdater
 }:
 let
   fs = lib.fileset;
-  colorFiles = builtins.path { path=../../.cache/wal; };
 in
 stdenv.mkDerivation rec {
   pname = "dwm";
@@ -12,16 +11,11 @@ stdenv.mkDerivation rec {
   
   src = ./.;
   
-  buildInputs = 
-  [
-    libX11 
-    libXinerama 
-    libXft 
-  ];
+  buildInputs = [ libX11 libXinerama libXft ];
 
   prePatch = ''
     sed -i "s@/usr/local@$out@" config.mk
   '';
 
-  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc WALINC=${colorFiles}" ];
+  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];
 }

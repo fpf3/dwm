@@ -4,7 +4,6 @@
 }:
 let
   fs = lib.fileset;
-  colorFiles = builtins.path { path=../../.cache/wal; };
 in
 stdenv.mkDerivation rec {
   pname = "dwm";
@@ -21,5 +20,5 @@ stdenv.mkDerivation rec {
     sed -i "s@/usr/local@$out@" config.mk
   '';
 
-  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc WALINC=${colorFiles}" ];
+  makeFlags = [ "CC=${stdenv.cc.targetPrefix}cc" ];
 }

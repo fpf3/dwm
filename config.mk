@@ -21,10 +21,8 @@ FREETYPEINC = /usr/include/freetype2
 #FREETYPEINC = ${X11INC}/freetype2
 #KVMLIB = -lkvm
 
-WALINC ?= /home/${USER}/.cache/wal
-
 # includes and libs
-INCS = -I${X11INC} -I${FREETYPEINC} -I${WALINC}
+INCS = -I${X11INC} -I${FREETYPEINC}
 LIBS = -L${X11LIB} -lX11 ${XINERAMALIBS} ${FREETYPELIBS} -lX11-xcb -lxcb -lxcb-res ${KVMLIB}
 
 # flags
