@@ -1,8 +1,7 @@
 # shell for dev and debug
 { pkgs ? import <nixpkgs> {} }:
-pkgs.mkShell {
-    buildInputs = 
-    with pkgs; [
+pkgs.mkShell rec {
+    buildInputs = with pkgs; [
       dmenu
       feh
       gnumake
@@ -19,8 +18,9 @@ pkgs.mkShell {
       xorg.libxcb
     ];
     
+    LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath buildInputs}";
+    
     shellHook = ''
-      export PATH="$PATH:/home/$USER/bin"
       export DISPLAY=:99
     '';
 }
