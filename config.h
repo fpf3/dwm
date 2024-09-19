@@ -7,7 +7,7 @@
 #include "types.h"
 #include "funcprotos.h"
 #include "util.h"
-#include "colors-wal-dwm.h"
+#include "default_colors.h"
 
 #define SESSION_FILE "/tmp/dwm-session"
 

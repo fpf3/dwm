@@ -916,7 +916,9 @@ getparentprocess(pid_t p)
 	if (!(f = fopen(buf, "r")))
 		return 0;
 
-	fscanf(f, "%*u %*s %*c %u", &v);
+	if (fscanf(f, "%*u %*s %*c %u", &v) != 4)
+        kill(getpid(), SIGSEGV);
+
 	fclose(f);
 
 	return (pid_t)v;
@@ -1661,8 +1663,12 @@ run(void)
 void
 runAutoStart(void)
 {
-	system("autostart_blocking.sh");
-	system("autostart.sh &");
+    int ret = 0;
+	ret = system("autostart_blocking.sh");
+	ret |= system("autostart.sh &");
+
+    if (ret)
+        kill(getpid(), SIGSEGV);
 }
 
 void
@@ -2211,10 +2217,9 @@ bigtile(Monitor *m)
 }
 
 void 
-bumpfontsize(Arg* arg)
+bumpfontsize(const Arg* arg)
 {
     int i;
-    Fnt* tmpfont;
 
     for(i = 0; i < LENGTH(fonts); i++)
     {

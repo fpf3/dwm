@@ -10,7 +10,7 @@ void arrangemon(Monitor *m);
 void attach(Client *c);
 void attachstack(Client *c);
 void bigtile(Monitor *m);
-void bumpfontsize(Arg* arg);
+void bumpfontsize(const Arg* arg);
 void buttonpress(XEvent *e);
 void checkotherwm(void);
 void cleanup(void);

@@ -27,3 +27,4 @@ void *ecalloc(size_t nmemb, size_t size);
 #define SPTAGMASK   			(((1 << LENGTH(scratchpads))-1) << LENGTH(tags))
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
 #endif /* UTIL_H */
+

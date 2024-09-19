@@ -11,13 +11,14 @@ pkgs.mkShell rec {
     ];
     
     nativeBuildInputs = with pkgs; [
+      gcc
+      clang-tools
       dmenu
       feh
       gnumake
+      libclang
       lukesmithxyz-st
       rofimoji
-      libclang
-      clang-tools
     ];
     
     LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath buildInputs}";
