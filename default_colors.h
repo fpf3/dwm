@@ -1,6 +1,8 @@
 #ifndef DEFAULT_COLORS_H
 #define DEFAULT_COLORS_H
 
+#include "types.h"
+
 char norm_fg[] = "#d6d9ca";
 char norm_bg[] = "#0d1310";
 char norm_border[] = "#95978d";

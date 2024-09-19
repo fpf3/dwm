@@ -3081,12 +3081,12 @@ main(int argc, char *argv[], char* envp[])
 	if (!(xcon = XGetXCBConnection(dpy)))
 		die("dwm: cannot get xcb connection\n");
 	checkotherwm();
-	setup();
-	scan();
-	restore_session();
 	runAutoStart();
 	XrmInitialize();
 	load_xresources();
+	setup();
+	scan();
+	restore_session();
 	run();
 	if (restart){
         printf("Restarting dwm from %s...\n", argv[0]);
