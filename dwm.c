@@ -37,6 +37,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xproto.h>
 #include <X11/Xutil.h>
+#include <X11/Xresource.h>
 #ifdef XINERAMA
 #include <X11/extensions/Xinerama.h>
 #endif /* XINERAMA */
@@ -117,9 +118,30 @@ static time_t ptime, pstart;
 static unsigned char pwork;
 static int restart = 0;
 
-
 /* configuration, allows nested code to access above variables */
 #include "config.h"
+
+/*
+ * Xresources preferences to load at startup
+ */
+ResourcePref resources[] = {
+		{ "norm_bg",        STRING,  &norm_bg },
+		{ "norm_border",    STRING,  &norm_border },
+		{ "norm_fg",        STRING,  &norm_fg },
+		{ "sel_bg",         STRING,  &sel_bg },
+		{ "sel_border",     STRING,  &sel_border },
+		{ "sel_fg",         STRING,  &sel_fg },
+        { "urg_bg",         STRING,  &urg_bg },
+        { "urg_border",     STRING,  &urg_border },
+        { "urg_fg",         STRING,  &urg_fg },
+		{ "borderpx",       INTEGER, &borderpx },
+		{ "snap",          INTEGER, &snap },
+		{ "showbar",       INTEGER, &showbar },
+		{ "topbar",        INTEGER, &topbar },
+		{ "nmaster",       INTEGER, &nmaster },
+		{ "resizehints",   INTEGER, &resizehints },
+		{ "mfact",      	FLOAT,   &mfact },
+};
 
 static int fontsizes[LENGTH(fonts)] = {11, 16, 16};
 
@@ -2914,6 +2936,60 @@ wintomon(Window w)
 	return selmon;
 }
 
+void
+resource_load(XrmDatabase db, char *name, enum resource_type rtype, void *dst)
+{
+	char *sdst = NULL;
+	int *idst = NULL;
+	float *fdst = NULL;
+
+	sdst = dst;
+	idst = dst;
+	fdst = dst;
+
+	char fullname[256];
+	char *type;
+	XrmValue ret;
+
+	snprintf(fullname, sizeof(fullname), "%s.%s", "dwm", name);
+	fullname[sizeof(fullname) - 1] = '\0';
+
+	XrmGetResource(db, fullname, "*", &type, &ret);
+	if (!(ret.addr == NULL || strncmp("String", type, 64)))
+	{
+		switch (rtype) {
+		case STRING:
+			strcpy(sdst, ret.addr);
+			break;
+		case INTEGER:
+			*idst = strtoul(ret.addr, NULL, 10);
+			break;
+		case FLOAT:
+			*fdst = strtof(ret.addr, NULL);
+			break;
+		}
+	}
+}
+
+void
+load_xresources(void)
+{
+	Display *display;
+	char *resm;
+	XrmDatabase db;
+	ResourcePref *p;
+
+	display = XOpenDisplay(NULL);
+	resm = XResourceManagerString(display);
+	if (!resm)
+		return;
+
+	db = XrmGetStringDatabase(resm);
+	for (p = resources; p < resources + LENGTH(resources); p++)
+		resource_load(db, p->name, p->type, p->dst);
+	XCloseDisplay(display);
+}
+
 /* There's no way to check accesses to destroyed windows, thus those cases are
  * ignored (especially on UnmapNotify's). Other types of errors call Xlibs
  * default error handler, which may call exit. */
@@ -3002,6 +3078,8 @@ main(int argc, char *argv[], char* envp[])
 	scan();
 	restore_session();
 	runAutoStart();
+	XrmInitialize();
+	load_xresources();
 	run();
 	if (restart){
         printf("Restarting dwm from %s...\n", argv[0]);
