@@ -32,7 +32,6 @@ static const int swallowfloating    = 0;        /* 1 means swallow floating wind
 static const char *fonts[]          = { "monospace:size=", 
 										"NotoColorEmoji:antialias=true:autohint=true:pixelsize=", 
 										"JoyPixels:pixelsize="};
-static const char* defaultfont = "monospace";
 static const char dmenufont[]       = "monospace:size=10";
 
 //const char *unicode_cmd[] = {"unicode_select", NULL};

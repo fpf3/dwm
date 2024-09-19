@@ -276,7 +276,7 @@ arrange(Monitor *m)
 void
 arrangemon(Monitor *m)
 {
-	strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
+	strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, strlen(m->ltsymbol));
 	if (m->lt[m->sellt]->arrange)
 		m->lt[m->sellt]->arrange(m);
 }
@@ -938,8 +938,9 @@ getparentprocess(pid_t p)
 	if (!(f = fopen(buf, "r")))
 		return 0;
 
-	if (fscanf(f, "%*u %*s %*c %u", &v) != 4)
-        kill(getpid(), SIGSEGV);
+    int fret;
+	if ((fret = fscanf(f, "%*u %*s %*c %u", &v)) != 4)
+        printf("getparentprocess `fscanf` returned %d, expected 4\n", fret);
 
 	fclose(f);
 
@@ -1690,7 +1691,7 @@ runAutoStart(void)
 	ret |= system("autostart.sh &");
 
     if (ret)
-        kill(getpid(), SIGSEGV);
+        printf("runAutoStart scripts failed.\n");
 }
 
 void
@@ -1888,7 +1889,7 @@ setlayout(const Arg *arg)
 		selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag] ^= 1;
 	if (arg && arg->v)
 		selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt] = (Layout *)arg->v;
-	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
+	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, strlen(selmon->ltsymbol));
 	if (selmon->sel)
 		arrange(selmon);
 	else
@@ -1931,10 +1932,16 @@ setup(void)
 	root = RootWindow(dpy, screen);
 	drw = drw_create(dpy, screen, root, sw, sh);
     char** fontset = fontset_gen();
+    
     for (i = 0; fontset[i] && i < LENGTH(fonts); i++)
+    {
         printf("%s\n", fontset[i]);
+    }
+
 	if (!drw_fontset_create(drw, fontset, LENGTH(fonts)))
+    {
 		die("no fonts could be loaded.");
+    }
     fontset_free(fontset);
 	lrpad = drw->fonts->h;
 	bh = drw->fonts->h + 2;
