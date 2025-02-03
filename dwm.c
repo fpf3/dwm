@@ -2844,17 +2844,25 @@ view(const Arg *arg)
 	int i;
 	unsigned int curtag = selmon->pertag->curtag;
 
-	if (arg->ui & TAGMASK){
-		if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags]){
-			selmon->pertag->curtag = selmon->pertag->prevtag;
-		}
-		else {
-			selmon->tagset[selmon->seltags^1] = arg->ui & TAGMASK;
-			for (i = 0; !(arg->ui & 1 << i); i++);
-			selmon->pertag->curtag = i + 1;
-		}
-		selmon->pertag->prevtag = curtag;
+    if (arg->ui == 0 || (arg->ui & TAGMASK) == selmon->tagset[selmon->seltags])
+    {
+        if (selmon->pertag->prevtag == 255) // uninitialized prevtag, bail
+            return;
+        else
+            selmon->pertag->curtag = selmon->pertag->prevtag;
+    }
+	else if (arg->ui & TAGMASK)
+    {
+        selmon->tagset[selmon->seltags^1] = arg->ui & TAGMASK;
+        for (i = 0; !(arg->ui & 1 << i); i++);
+        selmon->pertag->curtag = i + 1;
 	}
+    else 
+    {
+        return;
+    }
+
+    selmon->pertag->prevtag = curtag;
 	
 	selmon->seltags ^= 1; /* toggle sel tagset */
 	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
