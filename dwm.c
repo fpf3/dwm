@@ -46,6 +46,7 @@
 #include <xcb/res.h>
 #include <X11/XKBlib.h>
 
+#include "buildident.h"
 #include "drw.h"
 #include "util.h"
 #include "types.h"
@@ -3081,7 +3082,7 @@ main(int argc, char *argv[], char* envp[])
 	gb_envp = envp;
 
 	if (argc == 2 && !strcmp("-v", argv[1]))
-		die("dwm-"VERSION);
+		die("dwm suckless window manager\nBuild date: %s\nGit revision: %s", BUILDDATE, GITREV);
 	else if (argc != 1)
 		die("usage: dwm [-v]");
 	if (!setlocale(LC_CTYPE, "") || !XSupportsLocale())
