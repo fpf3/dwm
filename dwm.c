@@ -46,7 +46,6 @@
 #include <xcb/res.h>
 #include <X11/XKBlib.h>
 
-#include "buildident.h"
 #include "drw.h"
 #include "util.h"
 #include "types.h"

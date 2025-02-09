@@ -24,10 +24,6 @@ ${OBJ}: config.mk buildheader
 dwm: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
 
-buildheader:
-	echo "#define GITREV \"`git log --pretty=%P -n 1`\"" > buildident.h
-	echo "#define BUILDDATE \"`date`\"" >> buildident.h
-
 clean:
 	rm -f dwm ${OBJ} dwm-${VERSION}.tar.gz buildient.h
 
