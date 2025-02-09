@@ -1486,7 +1486,10 @@ removesystrayicon(Client *i)
 void
 resize(Client *c, int x, int y, int w, int h, int interact)
 {
-	if (applysizehints(c, &x, &y, &w, &h, interact))
+    // I would short circuit here, but I think that would bite me reading this later
+    if (!interact) 
+		resizeclient(c, x, y, w, h);
+    else if (applysizehints(c, &x, &y, &w, &h, interact))
 		resizeclient(c, x, y, w, h);
 }
 
@@ -2307,10 +2310,35 @@ togglefloating(const Arg *arg)
 {
 	if (!selmon->sel)
 		return;
+    
 	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
-	if (selmon->sel->isfloating)
-		resize(selmon->sel, selmon->sel->x, selmon->sel->y,
-			selmon->sel->w, selmon->sel->h, 0);
+    if (arg != NULL) // hacky. this null check shows we are coming from the keybind
+    {
+        if (selmon->sel->isfloating) 
+        {
+            if    (selmon->sel->floatx
+                || selmon->sel->floaty 
+                || selmon->sel->floatw 
+                || selmon->sel->floath)
+            {
+                selmon->sel->x = MAX(1, selmon->sel->floatx);
+                selmon->sel->y = MAX(1, selmon->sel->floaty);
+                selmon->sel->w = MAX(1, selmon->sel->floatw);
+                selmon->sel->h = MAX(1, selmon->sel->floath);
+            }
+        }
+        else
+        {
+            selmon->sel->floatx = selmon->sel->x;
+            selmon->sel->floaty = selmon->sel->y;
+            selmon->sel->floatw = selmon->sel->w;
+            selmon->sel->floath = selmon->sel->h;
+        }
+    }
+    
+    resize(selmon->sel, selmon->sel->x, selmon->sel->y,
+        selmon->sel->w, selmon->sel->h, 0);
+
 	arrange(selmon);
 }
 
