@@ -159,7 +159,7 @@ applyrules(Client *c)
 	XClassHint ch = { NULL, NULL };
 
 	/* rule matching */
-	c->isfloating = 1;
+	c->isfloating = 1; // default to floating by default.
 	c->tags = 0;
 	XGetClassHint(dpy, c->win, &ch);
 	class    = ch.res_class ? ch.res_class : broken;
@@ -176,10 +176,6 @@ applyrules(Client *c)
 			c->noswallow = r->noswallow;
 			c->isfloating = r->isfloating;
 			c->tags |= r->tags;
-			if ((r->tags & SPTAGMASK) && r->isfloating) {
-				c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
-				c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
-			}
 
 			for (m = mons; m && m->num != r->monitor; m = m->next);
 			if (m)
@@ -187,6 +183,12 @@ applyrules(Client *c)
 			break;
 		}
 	}
+    
+    if (c->isfloating) {
+        c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
+        c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
+    }
+
 	if (ch.res_class)
 		XFree(ch.res_class);
 	if (ch.res_name)
@@ -2426,6 +2428,11 @@ unfocus(Client *c, int setfocus)
 void
 unmanage(Client *c, int destroyed)
 {
+    if (c == NULL)
+    {
+        printf("Attempted to unmanage a null client\n");
+        return;
+    }
 	Monitor *m = c->mon;
 	XWindowChanges wc;
 
