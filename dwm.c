@@ -2352,6 +2352,7 @@ toggleswallow(const Arg* arg)
         Client* term = termforwin(c);
         if (term != NULL)
         {
+            c->noswallow = 0; // user wants it swallowed, we'll swallow it
             swallow(term, c);
         }
     }
