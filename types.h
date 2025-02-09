@@ -52,6 +52,7 @@ struct Client {
 	int bw, oldbw;
 	unsigned int tags;
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isterminal, noswallow;
+    int resizehints;
 	pid_t pid;
 	Client *next;
 	Client *snext;
@@ -117,6 +118,7 @@ typedef struct {
 	int isterminal;
 	int noswallow;
 	int monitor;
+    int resizehints;
 } Rule;
 
 typedef struct Systray   Systray;

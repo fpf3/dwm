@@ -46,6 +46,7 @@
 #include <xcb/res.h>
 #include <X11/XKBlib.h>
 
+#include "buildident.h"
 #include "drw.h"
 #include "util.h"
 #include "types.h"
@@ -171,6 +172,7 @@ applyrules(Client *c)
 		&& (!r->class || strstr(class, r->class))
 		&& (!r->instance || strstr(instance, r->instance)))
 		{
+            c->resizehints = r->resizehints;
 			c->isterminal = r->isterminal;
 			c->noswallow = r->noswallow;
 			c->isfloating = r->isfloating;
@@ -225,7 +227,7 @@ applysizehints(Client *c, int *x, int *y, int *w, int *h, int interact)
 		*h = bh;
 	if (*w < bh)
 		*w = bh;
-	if (resizehints || c->isfloating || !c->mon->lt[c->mon->sellt]->arrange) {
+	if (c->resizehints || c->isfloating || !c->mon->lt[c->mon->sellt]->arrange) {
 		/* see last two sentences in ICCCM 4.1.2.3 */
 		baseismin = c->basew == c->minw && c->baseh == c->minh;
 		if (!baseismin) { /* temporarily remove base dimensions */
@@ -1168,6 +1170,7 @@ manage(Window w, XWindowAttributes *wa)
 	c->w = c->oldw = wa->width;
 	c->h = c->oldh = wa->height;
 	c->oldbw = wa->border_width;
+    c->resizehints = resizehints;
 
 	updatetitle(c);
 	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
@@ -2889,17 +2892,25 @@ view(const Arg *arg)
 	int i;
 	unsigned int curtag = selmon->pertag->curtag;
 
-	if (arg->ui & TAGMASK){
-		if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags]){
-			selmon->pertag->curtag = selmon->pertag->prevtag;
-		}
-		else {
-			selmon->tagset[selmon->seltags^1] = arg->ui & TAGMASK;
-			for (i = 0; !(arg->ui & 1 << i); i++);
-			selmon->pertag->curtag = i + 1;
-		}
-		selmon->pertag->prevtag = curtag;
+    if (arg->ui == 0 || (arg->ui & TAGMASK) == selmon->tagset[selmon->seltags])
+    {
+        if (selmon->pertag->prevtag == 255) // uninitialized prevtag, bail
+            return;
+        else
+            selmon->pertag->curtag = selmon->pertag->prevtag;
+    }
+	else if (arg->ui & TAGMASK)
+    {
+        selmon->tagset[selmon->seltags^1] = arg->ui & TAGMASK;
+        for (i = 0; !(arg->ui & 1 << i); i++);
+        selmon->pertag->curtag = i + 1;
 	}
+    else 
+    {
+        return;
+    }
+
+    selmon->pertag->prevtag = curtag;
 	
 	selmon->seltags ^= 1; /* toggle sel tagset */
 	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
@@ -3118,7 +3129,7 @@ main(int argc, char *argv[], char* envp[])
 	gb_envp = envp;
 
 	if (argc == 2 && !strcmp("-v", argv[1]))
-		die("dwm-"VERSION);
+		die("dwm suckless window manager\nBuild date: %s\nGit revision: %s", BUILDDATE, GITREV);
 	else if (argc != 1)
 		die("usage: dwm [-v]");
 	if (!setlocale(LC_CTYPE, "") || !XSupportsLocale())

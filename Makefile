@@ -19,13 +19,17 @@ options:
 .c.o:
 	${CC} -c ${CFLAGS} $<
 
-${OBJ}: config.mk
+${OBJ}: config.mk buildheader
 
 dwm: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
 
+buildheader:
+	echo "#define GITREV \"`git log --pretty=%P -n 1`\"" > buildident.h
+	echo "#define BUILDDATE \"`date`\"" >> buildident.h
+
 clean:
-	rm -f dwm ${OBJ} dwm-${VERSION}.tar.gz
+	rm -f dwm ${OBJ} dwm-${VERSION}.tar.gz buildient.h
 
 dist: clean
 	mkdir -p dwm-${VERSION}
@@ -47,4 +51,4 @@ uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/dwm\
 		${DESTDIR}${MANPREFIX}/man1/dwm.1
 
-.PHONY: all options clean dist install uninstall
+.PHONY: all options clean dist install uninstall buildheader
