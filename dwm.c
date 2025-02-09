@@ -159,7 +159,7 @@ applyrules(Client *c)
 	XClassHint ch = { NULL, NULL };
 
 	/* rule matching */
-	c->isfloating = 0;
+	c->isfloating = 1;
 	c->tags = 0;
 	XGetClassHint(dpy, c->win, &ch);
 	class    = ch.res_class ? ch.res_class : broken;
@@ -263,14 +263,16 @@ void
 arrange(Monitor *m)
 {
 	if (m)
+    {
 		showhide(m->stack);
-	else for (m = mons; m; m = m->next)
-		showhide(m->stack);
-	if (m) {
 		arrangemon(m);
 		restack(m);
-	} else for (m = mons; m; m = m->next)
+    }
+	else for (m = mons; m; m = m->next)
+    {
+		showhide(m->stack);
 		arrangemon(m);
+    }
 }
 
 void
@@ -929,17 +931,20 @@ getatomprop(Client *c, Atom prop)
 pid_t
 getparentprocess(pid_t p)
 {
-	unsigned int v = 0;
+	static char buf[256];
+	
+    pid_t checkpid;
+    char state;
+    unsigned int v = 0;
 
 	FILE *f;
-	char buf[256];
 	snprintf(buf, sizeof(buf) - 1, "/proc/%u/stat", (unsigned)p);
 
 	if (!(f = fopen(buf, "r")))
 		return 0;
 
     int fret;
-	if ((fret = fscanf(f, "%*u %*s %*c %u", &v)) != 4)
+	if ((fret = fscanf(f, "%d %s %c %u", &checkpid, buf, &state, &v)) != 4)
         printf("getparentprocess `fscanf` returned %d, expected 4\n", fret);
 
 	fclose(f);
@@ -2332,6 +2337,26 @@ togglescratch(const Arg *arg)
 }
 
 void
+toggleswallow(const Arg* arg)
+{
+    Client* c = selmon->sel;
+
+    if (c != NULL && c->swallowing != NULL)
+    {
+        unswallow(c, FALSE);
+    }
+    else if (c != NULL)
+    {
+        Client* term = termforwin(c);
+        if (term != NULL)
+        {
+            swallow(term, c);
+        }
+    }
+}
+
+
+void
 toggletag(const Arg *arg)
 {
 	unsigned int newtags;
@@ -2402,7 +2427,7 @@ unmanage(Client *c, int destroyed)
 	XWindowChanges wc;
 
 	if (c->swallowing) {
-		unswallow(c);
+		unswallow(c, TRUE);
 		return;
 	}
 
@@ -2458,22 +2483,44 @@ unmapnotify(XEvent *e)
 }
 
 void
-unswallow(Client *c)
+unswallow(Client *c, int destroy)
 {
-	c->win = c->swallowing->win;
+    Client* newc = c->swallowing;
+    Window tmpwin = c->win;
 
-	free(c->swallowing);
-	c->swallowing = NULL;
+	c->win = c->swallowing->win;
+    newc->win = tmpwin;
+    
+    if (c->swallowing != NULL && destroy)
+    {
+        free(c->swallowing);
+    }
+    else if (!destroy)
+    {
+        XMapWindow(dpy, newc->win);
+        updatetitle(newc);
+        
+        updatewindowtype(newc);
+        updatewmhints(newc);
+
+        setclientstate(newc, NormalState);
+        attach(newc);
+        attachstack(newc);
+        XMoveResizeWindow(dpy, newc->win, newc->x, newc->y, newc->w, newc->h);
+    }
+    
+    c->swallowing = NULL;
 
 	/* unfullscreen the client */
 	setfullscreen(c, 0);
 	updatetitle(c);
 	arrange(c->mon);
-	XMapWindow(dpy, c->win);
 	XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);
+	XMapWindow(dpy, c->win);
 	setclientstate(c, NormalState);
 	focus(NULL);
 	arrange(c->mon);
+    updateclientlist();
 }
 
 void

@@ -8,11 +8,12 @@ pkgs.mkShell rec {
       xorg.libXft
       xorg.libXinerama
       xorg.libxcb
+      gdb
+      clang-tools
     ];
     
     nativeBuildInputs = with pkgs; [
       gcc
-      clang-tools
       dmenu
       feh
       gnumake
