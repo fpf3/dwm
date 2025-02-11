@@ -2379,6 +2379,7 @@ swapswallow(const Arg* arg)
         c->swallowing->win = c->win;
         c->win = tmp;
 
+        XUnmapWindow(dpy, c->swallowing->win);
         XMapWindow(dpy, c->win);
         updatetitle(c);
         updatewindowtype(c);
