@@ -89,6 +89,7 @@ void setfullscreen(Client *c, int fullscreen);
 void sighup_handle(int unused);
 void sigterm_handle(int unused);
 void swallow(Client* c, Client* p);
+void swapswallow(const Arg* arg);
 Client* swallowingclient(Window w);
 void fullscreen(const Arg *arg);
 void togglepomo(void);

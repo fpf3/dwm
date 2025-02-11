@@ -2369,6 +2369,30 @@ togglescratch(const Arg *arg)
 }
 
 void
+swapswallow(const Arg* arg)
+{
+    printf("swapswallow\n");
+    Client* c = selmon->sel;
+
+    if (c != NULL && c->swallowing != NULL)
+    {
+        Window tmp = c->swallowing->win;
+        c->swallowing->win = c->win;
+        c->win = tmp;
+
+        XMapWindow(dpy, c->win);
+        updatetitle(c);
+        updatewindowtype(c);
+        updatewmhints(c);
+
+        XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);
+
+        focus(NULL);
+        arrange(c->mon);
+    }
+}
+
+void
 toggleswallow(const Arg* arg)
 {
     Client* c = selmon->sel;
