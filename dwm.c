@@ -2371,7 +2371,6 @@ togglescratch(const Arg *arg)
 void
 swapswallow(const Arg* arg)
 {
-    printf("swapswallow\n");
     Client* c = selmon->sel;
 
     if (c != NULL && c->swallowing != NULL)
