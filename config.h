@@ -34,8 +34,9 @@ static const char *fonts[]          = { "monospace:size=",
 										"JoyPixels:pixelsize="};
 static const char dmenufont[]       = "monospace:size=10";
 
-//const char *unicode_cmd[] = {"unicode_select", NULL};
 const char *unicode_cmd[] = {"rofimoji", NULL};
+const char *snip_cmd[] = {"snip", NULL};
+const char *fileman_cmd[] = {"xdg-open", ".", NULL};
 
 const float refresh_interval = 1000. / 144.;
 
@@ -121,6 +122,8 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_Down,   spawn,          {.v = invertcmd } },
 	{ MODKEY|ShiftMask,             XK_Up,     spawn,          {.v = normalcmd } },
     { MODKEY|ShiftMask,             XK_u,      spawn,          {.v = unicode_cmd} },
+    { MODKEY|ShiftMask,             XK_s,      spawn,          {.v = snip_cmd} },
+    { MODKEY,                       XK_e,      spawn,          {.v = fileman_cmd} },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
