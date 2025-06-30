@@ -376,6 +376,31 @@ brightdelta(const Arg* arg)
     spawn(&a);
 }
 
+void 
+volumedelta(const Arg* arg)
+{
+    if (abs(arg->i) > 100)
+    {
+        printf("invalid brightness delta\n");
+        return;
+    }
+
+    char* cmd[5];
+    cmd[0] = "wpctl";
+    cmd[1] = "set-volume";
+    cmd[2] = "@DEFAULT_SINK@";
+
+    char buf[6];
+    snprintf(buf, 6, "%02u%%%c",
+            abs(arg->i),
+            arg->i < 0 ? '-' : '+');
+    cmd[3] = buf;
+    cmd[4] = NULL;
+
+    Arg a = { .v = cmd };
+    spawn(&a);
+}
+
 void
 checkotherwm(void)
 {

@@ -113,6 +113,11 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", norm_bg, "-nf", norm_fg, "-sb", sel_bg, "-sf", sel_fg, NULL };
 static const char *termcmd[]  = { "st", NULL };
 
+static const char *mutetogglecmd[] = { "wpctl", "set-mute", "@DEFAULT_SINK@", "toggle", NULL };
+static const char *playpausecmd[] = { "playerctl", "play-pause", NULL };
+static const char *nextcmd[] = { "playerctl", "next", NULL };
+static const char *prevcmd[] = { "playerctl", "prev", NULL };
+
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
@@ -151,12 +156,18 @@ static Key keys[] = {
 	{ MODKEY,                      XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,            XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,            XK_period, tagmon,         {.i = +1 } },
-	{ MODKEY,            			XK_u,  	   togglescratch,  {.ui = 0 } },
-	{ MODKEY|ShiftMask,            XK_c,	   togglescratch,  {.ui = 1 } },
-	{ MODKEY,            			XK_x,	   togglescratch,  {.ui = 2 } },
-	{ MODKEY,						XK_n,	   togglealttag,   {0} },
-    { 0,                            XF86XK_MonBrightnessUp, brightdelta, { .i = +5 } },
-    { 0,                            XF86XK_MonBrightnessDown, brightdelta, { .i = -5 } },
+	{ MODKEY,            			XK_u,  	                    togglescratch,  {.ui = 0 } },
+	{ MODKEY|ShiftMask,             XK_c,	                    togglescratch,  {.ui = 1 } },
+	{ MODKEY,            			XK_x,	                    togglescratch,  {.ui = 2 } },
+	{ MODKEY,						XK_n,	                    togglealttag,   {0} },
+    { 0,                            XF86XK_MonBrightnessUp,     brightdelta,    { .i = +5 } },
+    { 0,                            XF86XK_MonBrightnessDown,   brightdelta,    { .i = -5 } },
+    { 0,                            XF86XK_AudioRaiseVolume,    volumedelta,    { .i = +5 } },
+    { 0,                            XF86XK_AudioLowerVolume,    volumedelta,    { .i = -5 } },
+    { 0,                            XF86XK_AudioMute,           spawn,          { .v = mutetogglecmd } },
+    { 0,                            XF86XK_AudioPlay,           spawn,          { .v = playpausecmd } },
+    { 0,                            XF86XK_AudioNext,           spawn,          { .v = nextcmd } },
+    { 0,                            XF86XK_AudioPrev,           spawn,          { .v = prevcmd } },
 	// Set tag control keybinds for...
 	//      KEY 						TAG
 	TAGKEYS(XK_0, 						VIEWTAGMASK) // 0 key is bound to "all" tags

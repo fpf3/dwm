@@ -13,6 +13,7 @@ void bigtile(Monitor *m);
 void bumpfontsize(const Arg* arg);
 void buttonpress(XEvent *e);
 void brightdelta(const Arg* arg);
+void volumedelta(const Arg* arg);
 void checkotherwm(void);
 void cleanup(void);
 void cleanupmon(Monitor *mon);
