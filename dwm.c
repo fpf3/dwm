@@ -352,6 +352,30 @@ buttonpress(XEvent *e)
 		}
 }
 
+void 
+brightdelta(const Arg* arg)
+{
+    if (abs(arg->i) > 100)
+    {
+        printf("invalid brightness delta\n");
+        return;
+    }
+
+    char* cmd[4];
+    cmd[0] = "brightnessctl";
+    cmd[1] = "set";
+
+    char buf[6];
+    snprintf(buf, 6, "%02u%%%c",
+            abs(arg->i),
+            arg->i < 0 ? '-' : '+');
+    cmd[2] = buf;
+    cmd[3] = NULL;
+
+    Arg a = { .v = cmd };
+    spawn(&a);
+}
+
 void
 checkotherwm(void)
 {

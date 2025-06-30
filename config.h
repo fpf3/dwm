@@ -9,6 +9,8 @@
 #include "util.h"
 #include "default_colors.h"
 
+#include <X11/XF86keysym.h>
+
 #define SESSION_FILE "/tmp/dwm-session"
 
 /* appearance configurables */
@@ -111,17 +113,10 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", norm_bg, "-nf", norm_fg, "-sb", sel_bg, "-sf", sel_fg, NULL };
 static const char *termcmd[]  = { "st", NULL };
 
-//#define MONITOR_NAME "LVDS1"
-static const char *invertcmd[] = { "rotate_desktop.sh", "inverted" }; // flip monitor upside down
-static const char *normalcmd[] = { "rotate_desktop.sh", "normal" }; // put it rightside up
-
-
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY|ShiftMask,             XK_Down,   spawn,          {.v = invertcmd } },
-	{ MODKEY|ShiftMask,             XK_Up,     spawn,          {.v = normalcmd } },
     { MODKEY|ShiftMask,             XK_u,      spawn,          {.v = unicode_cmd} },
     { MODKEY|ShiftMask,             XK_s,      spawn,          {.v = snip_cmd} },
     { MODKEY,                       XK_e,      spawn,          {.v = fileman_cmd} },
@@ -160,6 +155,8 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,            XK_c,	   togglescratch,  {.ui = 1 } },
 	{ MODKEY,            			XK_x,	   togglescratch,  {.ui = 2 } },
 	{ MODKEY,						XK_n,	   togglealttag,   {0} },
+    { 0,                            XF86XK_MonBrightnessUp, brightdelta, { .i = +5 } },
+    { 0,                            XF86XK_MonBrightnessDown, brightdelta, { .i = -5 } },
 	// Set tag control keybinds for...
 	//      KEY 						TAG
 	TAGKEYS(XK_0, 						VIEWTAGMASK) // 0 key is bound to "all" tags
