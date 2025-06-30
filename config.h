@@ -116,7 +116,7 @@ static const char *termcmd[]  = { "st", NULL };
 static const char *mutetogglecmd[] = { "wpctl", "set-mute", "@DEFAULT_SINK@", "toggle", NULL };
 static const char *playpausecmd[] = { "playerctl", "play-pause", NULL };
 static const char *nextcmd[] = { "playerctl", "next", NULL };
-static const char *prevcmd[] = { "playerctl", "prev", NULL };
+static const char *prevcmd[] = { "playerctl", "previous", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
