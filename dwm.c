@@ -686,9 +686,16 @@ destroynotify(XEvent *e)
 void
 detach(Client *c)
 {
+    if (c == NULL)
+    {
+        return;
+    }
+
 	Client **tc;
 
-	for (tc = &c->mon->clients; *tc && *tc != c; tc = &(*tc)->next);
+	for (tc = &c->mon->clients; 
+         tc != NULL && *tc && *tc != c; 
+         tc = &(*tc)->next);
 	*tc = c->next;
 }
 
@@ -1719,9 +1726,20 @@ void
 rotatestack(const Arg *arg)
 {
 	Client *c = NULL;
+    Client *seltmp = NULL;
+
+    int carry_win = (abs(arg->i) > 1) ? 1 : 0;
 
 	if (!selmon->sel)
 		return;
+
+    if (carry_win)
+    {
+        seltmp = selmon->sel;
+        detach(selmon->sel);
+        detachstack(selmon->sel);
+    }
+
 	if (arg->i > 0) {
 		for (c = nexttiled(selmon->clients); c && nexttiled(c->next); c = nexttiled(c->next));
 		if (c){
@@ -1738,6 +1756,14 @@ rotatestack(const Arg *arg)
 			enqueuestack(c);
 		}
 	}
+
+    if (carry_win)
+    {
+        attach(seltmp);
+        attachstack(seltmp);
+        selmon->sel = seltmp;
+    }
+
 	if (c){
 		arrange(selmon);
 		//unfocus(f, 1);
