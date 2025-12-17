@@ -1691,8 +1691,10 @@ restore_session(void)
 		long unsigned int winId;
 		int monitorNum;
 		unsigned int tagsForWin;
-		int check = sscanf(str, "%lu %d %u", &winId, &monitorNum, &tagsForWin); // get data
-		if (check != 3) // break loop if data wasn't read correctly
+        int x, y, w, h;
+        int isfloating;
+		int check = sscanf(str, "%lu %d %u %d %d %d %d %d", &winId, &monitorNum, &tagsForWin, &x, &y, &w, &h, &isfloating); // get data
+		if (check != 8) // break loop if data wasn't read correctly
 			break;
 
 		for (Client *c = selmon->clients; c ; c = c->next) { // add tags to every window by winId
@@ -1702,6 +1704,12 @@ restore_session(void)
 				if (m != selmon)
 					sendmon(c, m);
 				c->tags = tagsForWin;
+                c->x = x;
+                c->y = y;
+                c->w = w;
+                c->h = h;
+                c->isfloating = isfloating;
+                resizeclient(c, c->x, c->y, c->w, c->h);
 				break;
 			}
 		}
@@ -1719,7 +1727,7 @@ restore_session(void)
 	fclose(fr);
 	
 	// delete a file
-	remove(SESSION_FILE);
+	//remove(SESSION_FILE);
 }
 
 void
@@ -1800,7 +1808,7 @@ save_session(void)
 	FILE *fw = fopen(SESSION_FILE, "w");
 	for (Monitor* m = mons; m != NULL; m = m->next){
 		for (Client *c = m->clients; c != NULL; c = c->next) {
-			fprintf(fw, "%lu %d %u\n", c->win, m->num, c->tags);
+			fprintf(fw, "%lu %d %u %d %d %d %d %d\n", c->win, m->num, c->tags, c->x, c->y, c->w, c->h, c->isfloating);
 		}
 	}
 	fclose(fw);
