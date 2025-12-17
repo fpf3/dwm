@@ -41,7 +41,7 @@ const char *snip_cmd[] = {"snip", NULL};
 const char *fileman_cmd[] = {"xdg-open", ".", NULL};
 const char *lockscreen_cmd[] = { "dm-tool", "lock", NULL};
 
-const float refresh_interval = 1000. / 144.;
+const float refresh_hz = 144.;
 
 typedef struct {
 	const char *name;

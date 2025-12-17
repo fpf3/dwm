@@ -1387,7 +1387,7 @@ movemouse(const Arg *arg)
 			handler[ev.type](&ev);
 			break;
 		case MotionNotify:
-			if ((ev.xmotion.time - lasttime) <= refresh_interval)
+			if ((ev.xmotion.time - lasttime) <= 1000. / refresh_hz)
 				continue;
 			lasttime = ev.xmotion.time;
 
@@ -1612,7 +1612,7 @@ resizemouse(const Arg *arg)
 			handler[ev.type](&ev);
 			break;
 		case MotionNotify:
-			if ((ev.xmotion.time - lasttime) <= refresh_interval)
+			if ((ev.xmotion.time - lasttime) <= 1000. / refresh_hz)
 				continue;
 			lasttime = ev.xmotion.time;
 
