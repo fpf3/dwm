@@ -1262,7 +1262,7 @@ manage(Window w, XWindowAttributes *wa)
 	/* only fix client y-offset, if the client center might cover the bar */
 	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
 		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
-	c->bw = fullscreen_flag ? 0 : borderpx;
+	c->bw = borderpx;
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -1335,12 +1335,23 @@ monocle(Monitor *m)
 	if (n > 0) /* override layout symbol */
 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
     if (m->showbar)
+    {
 	    for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
+        {
 	    	resize(c, m->wx + m->gappoh, m->wy + m->gappov, 
                       m->ww - (2 * c->bw) - (2 * m->gappoh), m->wh - (2 * c->bw) - (2 * m->gappov), 0);
+        }
+    }
     else
+    {
         for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
+        {
+            int bwtemp = c->bw;
+            c->bw = c->isfloating ? c->bw : 0;
 	    	resize(c, m->wx, m->wy, m->ww - (2 * c->bw), m->wh - (2 * c->bw), 0);
+            c->bw = bwtemp;
+        }
+    }
 
 }
 
@@ -1992,18 +2003,6 @@ fullscreen(const Arg *arg)
 	togglebar(arg);
 
     fullscreen_flag = !fullscreen_flag;
-
-    Monitor* m;
-    Client* c;
-	for (m = mons; m; m = m->next) 
-    {
-        for(c = mons->clients; c; c = c->next)
-        {
-            c->bw = fullscreen_flag ? 0 : borderpx;
-        }
-
-        arrange(m);
-    }
 }
 
 void
