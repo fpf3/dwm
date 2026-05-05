@@ -14,10 +14,15 @@
 #define SESSION_FILE "/tmp/dwm-session"
 
 /* appearance configurables */
-static unsigned int borderpx  = 1;        /* border pixel of windows */
-static unsigned int snap      = 6;        /* snap pixel */
-static int showbar            = 1;        /* 0 means no bar */
-static int topbar             = 1;        /* 0 means bottom bar */
+#define DEFAULT_BORDERPX 1
+#define DEFAULT_SNAP 6
+#define DEFAULT_SHOWBAR 1
+#define DEFAULT_TOPBAR 1
+
+static unsigned int borderpx  = DEFAULT_BORDERPX;/* border pixel of windows */
+static unsigned int snap      = DEFAULT_SNAP;    /* snap pixel */
+static int showbar            = DEFAULT_SHOWBAR; /* 0 means no bar */
+static int topbar             = DEFAULT_TOPBAR;  /* 0 means bottom bar */
 
 /* appearance constants */
 static const unsigned int gappx     = 5;        /* gaps between windows */

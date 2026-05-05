@@ -118,6 +118,8 @@ static time_t ptime, pstart;
 static unsigned char pwork;
 static int restart = 0;
 
+static int fullscreen_flag = FALSE;
+
 /* configuration, allows nested code to access above variables */
 #include "config.h"
 
@@ -1260,7 +1262,7 @@ manage(Window w, XWindowAttributes *wa)
 	/* only fix client y-offset, if the client center might cover the bar */
 	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
 		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
-	c->bw = borderpx;
+	c->bw = fullscreen_flag ? 0 : borderpx;
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -1988,6 +1990,20 @@ fullscreen(const Arg *arg)
 		setlayout(&((Arg) { .v = last_layout }));
 	}
 	togglebar(arg);
+
+    fullscreen_flag = !fullscreen_flag;
+
+    Monitor* m;
+    Client* c;
+	for (m = mons; m; m = m->next) 
+    {
+        for(c = mons->clients; c; c = c->next)
+        {
+            c->bw = fullscreen_flag ? 0 : borderpx;
+        }
+
+        arrange(m);
+    }
 }
 
 void
