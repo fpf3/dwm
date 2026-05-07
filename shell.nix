@@ -3,11 +3,12 @@
 pkgs.mkShell rec {
     buildInputs = with pkgs.buildPackages;
     [
-      xorg.xev
-      xorg.libX11
-      xorg.libXft
-      xorg.libXinerama
-      xorg.libxcb
+      xev
+      libX11
+      libXft
+      libXinerama
+      libxcb
+      libxcursor
       gdb
       clang-tools
     ];

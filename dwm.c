@@ -31,7 +31,6 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <X11/cursorfont.h>
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
@@ -45,6 +44,7 @@
 #include <X11/Xlib-xcb.h>
 #include <xcb/res.h>
 #include <X11/XKBlib.h>
+#include <X11/Xcursor/Xcursor.h>
 
 #include "drw.h"
 #include "util.h"
@@ -2092,9 +2092,9 @@ setup(void)
 	xatom[Xembed] = XInternAtom(dpy, "_XEMBED", False);
 	xatom[XembedInfo] = XInternAtom(dpy, "_XEMBED_INFO", False);
 	/* init cursors */
-	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
-	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
-	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
+	cursor[CurNormal] = drw_cur_create(drw, "left_ptr");
+	cursor[CurResize] = drw_cur_create(drw, "se-resize");
+	cursor[CurMove] = drw_cur_create(drw, "fleur");
 	/* init appearance */
 	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
 	for (i = 0; i < LENGTH(colors); i++)
